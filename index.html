@@ -4,45 +4,59 @@
   <meta charset="UTF-8" />
   <title>スペイン語動詞クイズ</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; max-width: 1000px; margin: auto; display: flex; flex-wrap: wrap; }
-    h1 { text-align: center; width: 100%; }
-    .left { flex: 1; min-width: 300px; }
-    .right { flex: 1; min-width: 300px; padding-left: 30px; }
-
-    .question { font-size: 24px; margin: 20px 0; }
-    button {
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .main {
+      flex: 1 1 400px;
+    }
+    .quiz-controls button {
       padding: 15px 30px;
       font-size: 20px;
       border-radius: 8px;
       cursor: pointer;
-      margin: 15px 10px 0 0;
+      margin: 10px;
       transition: background-color 0.3s ease;
       box-sizing: border-box;
     }
-    button:hover { background-color: #eee; }
-
-    .options button { margin: 10px; }
-    .feedback { font-size: 18px; margin-top: 10px; }
-    .pattern, .translation, .example { margin-top: 5px; }
-    #wrong-list { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ccc; }
-    .wrong-word { margin: 5px 0; }
-
-    table { border-collapse: collapse; width: 100%; margin-top: 10px; }
-    td { padding: 4px 8px; border-bottom: 1px solid #ccc; }
-
+    .quiz-controls button:hover {
+      background-color: #eee;
+    }
+    .feedback, .pattern, .translation, .example {
+      font-size: 18px;
+      margin-top: 10px;
+    }
+    .conjugation-table {
+      flex: 1 1 300px;
+      border-left: 2px solid #ccc;
+      padding-left: 20px;
+    }
+    .conjugation-table h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .conjugation-table ul {
+      padding-left: 20px;
+    }
     @media screen and (max-width: 768px) {
-      body { flex-direction: column; }
-      .right { padding-left: 0; }
-      button { width: 100%; font-size: 22px; margin: 10px 0; }
-      .options button { margin: 10px 0; }
+      body {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="left">
+  <div class="main">
     <h1>スペイン語動詞クイズ</h1>
     <div class="question" id="verb">Loading...</div>
-    <div class="options">
+    <div class="quiz-controls">
       <button onclick="checkAnswer('規則')">規則</button>
       <button onclick="checkAnswer('不規則')">不規則</button>
       <button onclick="checkAnswer('分からない')">分からない</button>
@@ -58,41 +72,19 @@
     </div>
   </div>
 
-  <div class="right">
-    <h3>🔤 活用表</h3>
-    <div id="conjugation"></div>
+  <div class="conjugation-table">
+    <h3>活用表</h3>
+    <div id="conjugations"></div>
   </div>
 
   <script>
     const verbs = [
-      {
-        infinitive: "ir", type: "不規則", group: "-", translation: "行く",
-        example: "Voy a la escuela.", pattern: "完全不規則",
-        conjugation: {
-          yo: "voy", tú: "vas", él: "va", nosotros: "vamos", vosotros: "vais", ellos: "van"
-        }
-      },
-      {
-        infinitive: "cantar", type: "規則", group: "-ar", translation: "歌う",
-        example: "Yo canto una canción.",
-        conjugation: {
-          yo: "canto", tú: "cantas", él: "canta", nosotros: "cantamos", vosotros: "cantáis", ellos: "cantan"
-        }
-      },
-      {
-        infinitive: "ser", type: "不規則", group: "-", translation: "〜である",
-        example: "Soy estudiante.", pattern: "完全不規則",
-        conjugation: {
-          yo: "soy", tú: "eres", él: "es", nosotros: "somos", vosotros: "sois", ellos: "son"
-        }
-      },
-      {
-        infinitive: "comer", type: "規則", group: "-er", translation: "食べる",
-        example: "Comemos arroz.",
-        conjugation: {
-          yo: "como", tú: "comes", él: "come", nosotros: "comemos", vosotros: "coméis", ellos: "comen"
-        }
-      }
+      { infinitive: "comer", type: "規則", group: "-er", translation: "食べる", example: "Yo como arroz.", conjugation: ["como", "comes", "come", "comemos", "coméis", "comen"] },
+      { infinitive: "ir", type: "不規則", group: "-", translation: "行く", example: "Voy a la escuela.", pattern: "完全不規則", conjugation: ["voy", "vas", "va", "vamos", "vais", "van"] },
+      { infinitive: "cantar", type: "規則", group: "-ar", translation: "歌う", example: "Yo canto una canción.", conjugation: ["canto", "cantas", "canta", "cantamos", "cantáis", "cantan"] },
+      { infinitive: "ser", type: "不規則", group: "-", translation: "〜である", example: "Soy estudiante.", pattern: "完全不規則", conjugation: ["soy", "eres", "es", "somos", "sois", "son"] },
+      { infinitive: "vivir", type: "規則", group: "-ir", translation: "住む", example: "Vivo en Tokio.", conjugation: ["vivo", "vives", "vive", "vivimos", "vivís", "viven"] },
+      { infinitive: "tener", type: "不規則", group: "-er", translation: "持つ", example: "Tengo un libro.", pattern: "yo不規則（tengo）＋語幹変化 e→ie", conjugation: ["tengo", "tienes", "tiene", "tenemos", "tenéis", "tienen"] }
     ];
 
     let currentVerb;
@@ -106,10 +98,10 @@
       currentVerb = getRandomVerb();
       document.getElementById("verb").textContent = `次の動詞は何の種類？： ${currentVerb.infinitive}`;
       document.getElementById("feedback").textContent = "";
-      document.getElementById("pattern").innerHTML = "";
+      document.getElementById("pattern").textContent = "";
       document.getElementById("translation").textContent = "";
-      document.getElementById("example").innerHTML = "";
-      document.getElementById("conjugation").innerHTML = "";
+      document.getElementById("example").textContent = "";
+      document.getElementById("conjugations").innerHTML = "";
     }
 
     function checkAnswer(choice) {
@@ -122,40 +114,32 @@
       } else {
         feedback.textContent = `❌ 不正解！正解：${currentVerb.type}`;
         feedback.style.color = "red";
-        if (choice !== "分からない") wrongAnswers.push(currentVerb);
+        wrongAnswers.push(currentVerb);
         updateWrongList();
       }
 
       if (currentVerb.pattern) {
-        patternBox.innerHTML = `<span style="color: red; font-size: 18px;">🔍 特徴：${currentVerb.pattern}</span>`;
+        patternBox.textContent = `🔍 ${currentVerb.pattern}`;
       }
-
       showDetails();
       showConjugation();
     }
 
     function showDetails() {
       document.getElementById("translation").textContent = "意味：" + currentVerb.translation;
-      document.getElementById("example").innerHTML = "例文：" + currentVerb.example;
+      document.getElementById("example").textContent = "例文：" + currentVerb.example;
     }
 
     function showConjugation() {
-      const box = document.getElementById("conjugation");
-      const conj = currentVerb.conjugation;
-      if (!conj) {
-        box.innerHTML = "この動詞の活用情報はありません。";
-        return;
-      }
-      box.innerHTML = `
-        <table>
-          <tr><td>yo</td><td>${conj.yo}</td></tr>
-          <tr><td>tú</td><td>${conj.tú}</td></tr>
-          <tr><td>él/ella/usted</td><td>${conj.él}</td></tr>
-          <tr><td>nosotros/as</td><td>${conj.nosotros}</td></tr>
-          <tr><td>vosotros/as</td><td>${conj.vosotros}</td></tr>
-          <tr><td>ellos/ellas/ustedes</td><td>${conj.ellos}</td></tr>
-        </table>
-      `;
+      if (!currentVerb.conjugation) return;
+      const persons = ["yo", "tú", "él/ella/usted", "nosotros/as", "vosotros/as", "ellos/ellas/ustedes"];
+      const conDiv = document.getElementById("conjugations");
+      let html = "<ul>";
+      currentVerb.conjugation.forEach((form, idx) => {
+        html += `<li><strong>${persons[idx]}</strong>: ${form}</li>`;
+      });
+      html += "</ul>";
+      conDiv.innerHTML = html;
     }
 
     function nextQuestion() {
