@@ -220,6 +220,6 @@
         table.innerHTML = "（活用未対応）";
         return;
       }
-      const rows = 抜けてる動詞全部追加してほしい！
+      const rows = pronouns.map((p, i) => `<tr><td>${p}</td><td>${stem + ending[i]}</td></tr>`).join("");
 </body>
 </html>
