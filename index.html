@@ -99,8 +99,21 @@
   // ✅ verbs 配列は別ファイルへ分離することも可能！
   // （ここでは省略：前のメッセージ参照）
   const verbs = [
-    // → 省略せず完全なverbs配列を貼り付けてね！
-  ];
+  // ✅ すでにある43単語に加えて、以下の6語を追加
+  // 🔽 新規追加単語 🔽
+  { infinitive: "salir", type: "不規則", translation: "出る", example: "Salgo de casa.", pattern: "yo不規則（salgo）" },
+  { infinitive: "poner", type: "不規則", translation: "置く", example: "Pongo el libro en la mesa.", pattern: "yo不規則（pongo）" },
+  { infinitive: "conocer", type: "不規則", translation: "知っている", example: "Conozco a Juan.", pattern: "yo不規則（conozco）" },
+  { infinitive: "conducir", type: "不規則", translation: "運転する", example: "Conduzco mi coche.", pattern: "yo不規則（conduzco）" },
+  { infinitive: "dar", type: "不規則", translation: "与える", example: "Doy un regalo.", pattern: "yo不規則（doy）" },
+  { infinitive: "traer", type: "不規則", translation: "持ってくる", example: "Traigo mi cuaderno.", pattern: "yo不規則（traigo）" },
+  
+  // 🔼 以下に既存43単語を続ける（すでにコード内に存在）
+  { infinitive: "cantar", type: "規則", group: "-ar", translation: "歌う", example: "Yo canto una canción." },
+  { infinitive: "trabajar", type: "規則", group: "-ar", translation: "働く", example: "Trabajo en una oficina." },
+  { infinitive: "cenar", type: "規則", group: "-ar", translation: "夕食をとる", example: "Cenamos a las ocho." },
+  // ... （以下略：既存のverbsの中身が続く）
+];
 
   let currentVerb;
   let wrongAnswers = [];
@@ -207,15 +220,6 @@
         table.innerHTML = "（活用未対応）";
         return;
       }
-      const rows = pronouns.map((p, i) => `<tr><td>${p}</td><td>${stem + ending[i]}</td></tr>`).join("");
-      table.innerHTML = `<table><tr><th>主語</th><th>現在形</th></tr>${rows}</table>`;
-    }
-  }
-
-  window.onload = function() {
-    remainingVerbs = [...verbs];
-    displayVerb();
-  };
-</script>
+      const rows = 抜けてる動詞全部追加してほしい！
 </body>
 </html>
