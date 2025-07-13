@@ -143,9 +143,14 @@ const verbs = [
 
 let currentVerb;
 let wrongAnswers = [];
+let remainingVerbs = [...verbs];
 
 function getRandomVerb() {
-  return verbs[Math.floor(Math.random() * verbs.length)];
+  if (remainingVerbs.length === 0) {
+    remainingVerbs = [...verbs]; // リセット
+  }
+  const index = Math.floor(Math.random() * remainingVerbs.length);
+  return remainingVerbs.splice(index, 1)[0];
 }
 
 function displayVerb() {
@@ -244,6 +249,7 @@ function showConjugation(inf) {
 }
 
 window.onload = function() {
+  remainingVerbs = [...verbs]; // 最初に全動詞をコピー
   displayVerb();
 };
 </script>
