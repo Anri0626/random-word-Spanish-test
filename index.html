@@ -88,6 +88,7 @@
       <div id="wrongWords"></div>
     </div>
     <div id="notice"></div>
+<div id="cycle-message" style="margin-top:20px; font-size: 20px; color: darkred; font-weight: bold;"></div>
   </div>
 
   <div class="table-container">
@@ -153,12 +154,18 @@
   function getRandomVerb() {
   const noticeEl = document.getElementById("notice");
   if (remainingVerbs.length === 0) {
-    noticeEl.textContent = "⭐ 全動詞を一巡しました！もう一度挑戦できます ⭐";
+    noticeEl.textContent = "";
+    document.getElementById("cycle-message").textContent = "🎉 全49語を一巡しました！再挑戦スタート！";
     remainingVerbs = shuffle([...verbs]);
   } else {
     noticeEl.textContent = "";
+    document.getElementById("cycle-message").textContent = "";
   }
-  return remainingVerbs.pop();
+  const index = Math.floor(Math.random() * remainingVerbs.length);
+  const selected = remainingVerbs[index];
+  remainingVerbs.splice(index, 1);
+  return selected;
+}
 }
 
   function displayVerb() {
