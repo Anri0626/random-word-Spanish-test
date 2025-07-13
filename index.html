@@ -17,6 +17,7 @@
       cursor: pointer;
       margin: 15px 10px 0 0;
       transition: background-color 0.3s ease;
+      box-sizing: border-box;
     }
     button:hover {
       background-color: #eee;
@@ -31,6 +32,19 @@
     .pattern, .translation, .example { margin-top: 5px; }
     #wrong-list { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ccc; }
     .wrong-word { margin: 5px 0; }
+
+    /* スマホ対応：幅480px以下の画面用 */
+    @media screen and (max-width: 480px) {
+      button {
+        width: 100%;
+        padding: 20px 0;
+        font-size: 22px;
+        margin: 10px 0;
+      }
+      .options button {
+        margin: 10px 0;
+      }
+    }
   </style>
 </head>
 <body>
