@@ -1,13 +1,32 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>スペイン語動詞クイズ</title>
   <style>
     body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
     h1 { text-align: center; }
+
     .question { font-size: 24px; margin: 20px 0; }
-    .options button { margin: 5px; padding: 10px 20px; font-size: 18px; }
+
+    /* ボタン共通スタイル */
+    button {
+      padding: 15px 30px;
+      font-size: 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 15px 10px 0 0;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #eee;
+    }
+
+    .options button {
+      margin: 10px;
+      /* padding と font-size は上で指定済みなのでここは省略可 */
+    }
+
     .feedback { font-size: 18px; margin-top: 10px; }
     .pattern, .translation, .example { margin-top: 5px; }
     #wrong-list { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ccc; }
@@ -130,7 +149,7 @@
       }
 
       if ((currentVerb.type === "不規則" || currentVerb.type === "再帰") && currentVerb.pattern) {
-        patternBox.innerHTML = `<span style=\"color: red; font-size: 18px;\">🔍 ${currentVerb.type === "不規則" ? "不規則の種類" : "特徴"}：${currentVerb.pattern}</span>`;
+        patternBox.innerHTML = `<span style="color: red; font-size: 18px;">🔍 ${currentVerb.type === "不規則" ? "不規則の種類" : "特徴"}：${currentVerb.pattern}</span>`;
       }
     }
 
