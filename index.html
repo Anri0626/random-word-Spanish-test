@@ -9,7 +9,6 @@
 
     .question { font-size: 24px; margin: 20px 0; }
 
-    /* ボタン共通スタイル */
     button {
       padding: 15px 30px;
       font-size: 20px;
@@ -25,7 +24,6 @@
 
     .options button {
       margin: 10px;
-      /* padding と font-size は上で指定済みなのでここは省略可 */
     }
 
     .feedback { font-size: 18px; margin-top: 10px; }
@@ -33,7 +31,6 @@
     #wrong-list { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ccc; }
     .wrong-word { margin: 5px 0; }
 
-    /* スマホ対応：幅480px以下の画面用 */
     @media screen and (max-width: 480px) {
       button {
         width: 100%;
@@ -67,7 +64,6 @@
   </div>
   <script>
     const verbs = [
-      // 🔵 規則動詞（17語）
       { infinitive: "cantar", type: "規則", group: "-ar", translation: "歌う", example: "Yo canto una canción." },
       { infinitive: "cenar", type: "規則", group: "-ar", translation: "夕食をとる", example: "Cenamos a las ocho." },
       { infinitive: "comprar", type: "規則", group: "-ar", translation: "買う", example: "Compro pan en la tienda." },
@@ -86,7 +82,6 @@
       { infinitive: "subir", type: "規則", group: "-ir", translation: "登る／上がる", example: "Subo las escaleras." },
       { infinitive: "vivir", type: "規則", group: "-ir", translation: "住む", example: "Vivo en Tokio." },
 
-      // 🔴 不規則動詞（26語）
       { infinitive: "ser", type: "不規則", group: "-", translation: "〜である", example: "Soy estudiante.", pattern: "完全不規則" },
       { infinitive: "estar", type: "不規則", group: "-ar", translation: "いる、ある", example: "Estoy cansado.", pattern: "完全不規則" },
       { infinitive: "ir", type: "不規則", group: "-", translation: "行く", example: "Voy a la escuela.", pattern: "完全不規則" },
@@ -116,7 +111,6 @@
       { infinitive: "saber", type: "不規則", group: "-er", translation: "知っている", example: "Sé la respuesta.", pattern: "yo不規則（sé）" },
       { infinitive: "querer", type: "不規則", group: "-er", translation: "欲しい／〜したい", example: "Quiero un café.", pattern: "語幹変化 e→ie" },
 
-      // 🟢 再帰動詞（12語）
       { infinitive: "bañarse", type: "再帰", group: "-ar", translation: "入浴する", example: "Me baño por la noche." },
       { infinitive: "ducharse", type: "再帰", group: "-ar", translation: "シャワーを浴びる", example: "Me ducho rápido." },
       { infinitive: "lavarse", type: "再帰", group: "-ar", translation: "洗う", example: "Me lavo las manos." },
@@ -165,6 +159,8 @@
       if ((currentVerb.type === "不規則" || currentVerb.type === "再帰") && currentVerb.pattern) {
         patternBox.innerHTML = `<span style="color: red; font-size: 18px;">🔍 ${currentVerb.type === "不規則" ? "不規則の種類" : "特徴"}：${currentVerb.pattern}</span>`;
       }
+
+      showDetails();
     }
 
     function showDetails() {
