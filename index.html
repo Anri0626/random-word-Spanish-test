@@ -1,115 +1,106 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <title>スペイン語動詞クイズ</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-      margin: 0 auto;
-      max-width: 1200px;
-      display: flex;
-      flex-direction: row;
-      gap: 40px;
-    }
-    .quiz-container {
-      flex: 1;
-    }
-    h1 { text-align: center; }
+let currentVerb;
+let wrongAnswers = [];
 
-    .question { font-size: 24px; margin: 20px 0; }
+function getRandomVerb() {
+  return verbs[Math.floor(Math.random() * verbs.length)];
+}
 
-    button {
-      padding: 15px 30px;
-      font-size: 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      margin: 15px 10px 0 0;
-      transition: background-color 0.3s ease;
-      box-sizing: border-box;
-    }
-    button:hover {
-      background-color: #eee;
+function displayVerb() {
+  currentVerb = getRandomVerb();
+  document.getElementById("verb").textContent = `次の動詞の種類は？： ${currentVerb.infinitive}`;
+  document.getElementById("feedback").textContent = "";
+  document.getElementById("pattern").textContent = "";
+  document.getElementById("translation").textContent = "";
+  document.getElementById("example").textContent = "";
+  document.getElementById("conjugation-table").innerHTML = "選択後に表示されます";
+}
+
+function checkAnswer(choice) {
+  const feedback = document.getElementById("feedback");
+  if (choice === currentVerb.type) {
+    feedback.textContent = "✅ 正解！";
+    feedback.style.color = "green";
+  } else if (choice === "分からない") {
+    feedback.textContent = `❓ 分からなかったね。正解：${currentVerb.type}`;
+    feedback.style.color = "gray";
+    wrongAnswers.push(currentVerb);
+    updateWrongList();
+  } else {
+    feedback.textContent = `❌ 不正解！正解：${currentVerb.type}`;
+    feedback.style.color = "red";
+    wrongAnswers.push(currentVerb);
+    updateWrongList();
+  }
+
+  if (currentVerb.pattern) {
+    document.getElementById("pattern").innerHTML = `🔍 特徴・パターン：<span style="color: red;">${currentVerb.pattern}</span>`;
+  }
+
+  document.getElementById("translation").textContent = "意味：" + currentVerb.translation;
+  document.getElementById("example").textContent = "例文：" + currentVerb.example;
+
+  showConjugation(currentVerb.infinitive);
+}
+
+function updateWrongList() {
+  const container = document.getElementById("wrongWords");
+  container.innerHTML = "";
+  const unique = [...new Set(wrongAnswers.map(v => v.infinitive))];
+  unique.forEach(verb => {
+    const div = document.createElement("div");
+    div.className = "wrong-word";
+    div.textContent = verb;
+    container.appendChild(div);
+  });
+}
+
+function nextQuestion() {
+  displayVerb();
+}
+
+function showConjugation(inf) {
+  const table = document.getElementById("conjugation-table");
+  const stem = inf.replace(/(se)?$/, "").replace(/arse|erse|irse/, "").replace(/r$/, "");
+
+  const irregular = {
+    "ser": ["soy", "eres", "es", "somos", "sois", "son"],
+    "ir": ["voy", "vas", "va", "vamos", "vais", "van"],
+    "tener": ["tengo", "tienes", "tiene", "tenemos", "tenéis", "tienen"],
+    "estar": ["estoy", "estás", "está", "estamos", "estáis", "están"],
+    "hacer": ["hago", "haces", "hace", "hacemos", "hacéis", "hacen"],
+    "decir": ["digo", "dices", "dice", "decimos", "decís", "dicen"],
+    "venir": ["vengo", "vienes", "viene", "venimos", "venís", "vienen"],
+    "ver": ["veo", "ves", "ve", "vemos", "veis", "ven"],
+    "dormir": ["duermo", "duermes", "duerme", "dormimos", "dormís", "duermen"],
+    "preferir": ["prefiero", "prefieres", "prefiere", "preferimos", "preferís", "prefieren"],
+    "sentarse": ["me siento", "te sientas", "se sienta", "nos sentamos", "os sentáis", "se sientan"],
+    "vestirse": ["me visto", "te vistes", "se viste", "nos vestimos", "os vestís", "se visten"]
+  };
+
+  const pronouns = ["yo", "tú", "él/ella", "nosotros", "vosotros", "ellos/ellas"];
+
+  if (irregular[inf]) {
+    const rows = irregular[inf].map((v, i) => `<tr><td>${pronouns[i]}</td><td>${v}</td></tr>`).join("");
+    table.innerHTML = `<table><tr><th>主語</th><th>現在形</th></tr>${rows}</table>`;
+  } else {
+    let ending;
+    if (inf.endsWith("ar") || inf.endsWith("arse")) {
+      ending = ["o", "as", "a", "amos", "áis", "an"];
+    } else if (inf.endsWith("er") || inf.endsWith("erse")) {
+      ending = ["o", "es", "e", "emos", "éis", "en"];
+    } else if (inf.endsWith("ir") || inf.endsWith("irse")) {
+      ending = ["o", "es", "e", "imos", "ís", "en"];
+    } else {
+      table.innerHTML = "（活用未対応）";
+      return;
     }
 
-    .feedback, .pattern, .translation, .example {
-      font-size: 18px;
-      margin-top: 10px;
-    }
+    const rows = pronouns.map((p, i) => `<tr><td>${p}</td><td>${p.includes("yo") ? stem + ending[i] : stem + ending[i]}</td></tr>`).join("");
+    table.innerHTML = `<table><tr><th>主語</th><th>現在形</th></tr>${rows}</table>`;
+  }
+}
 
-    .options button {
-      margin: 10px 10px 0 0;
-    }
-
-    #wrong-list {
-      margin-top: 30px;
-      padding-top: 20px;
-      border-top: 1px solid #ccc;
-    }
-
-    .wrong-word {
-      margin: 5px 0;
-    }
-
-    .table-container {
-      flex: 0.8;
-      min-width: 300px;
-      font-size: 18px;
-    }
-
-    @media screen and (max-width: 768px) {
-      body {
-        flex-direction: column;
-      }
-      button {
-        width: 100%;
-        font-size: 22px;
-        padding: 20px;
-        margin: 10px 0;
-      }
-    }
-
-    table {
-      border-collapse: collapse;
-      width: 100%;
-    }
-
-    table td, table th {
-      border: 1px solid #ccc;
-      padding: 6px;
-    }
-
-    table th {
-      background-color: #f0f0f0;
-    }
-
-    #conjugation-table {
-      margin-top: 20px;
-    }
-  </style>
-</head>
-<body>
-  <div class="quiz-container">
-    <h1>スペイン語動詞クイズ（規則／不規則）</h1>
-    <div class="question" id="verb">Loading...</div>
-    <div class="options">
-      <button onclick="checkAnswer('規則')">規則</button>
-      <button onclick="checkAnswer('不規則')">不規則</button>
-      <button onclick="checkAnswer('分からない')">分からない</button>
-    </div>
-    <div class="feedback" id="feedback"></div>
-    <div class="pattern" id="pattern"></div>
-    <div class="translation" id="translation"></div>
-    <div class="example" id="example"></div>
-    <button onclick="nextQuestion()">次の問題へ ➤</button>
-    <div id="wrong-list">
-      <h3>❌ 間違えた動詞リスト</h3>
-      <div id="wrongWords"></div>
-    </div>
-  </div>
-
-  <div class="table-container">
-    <h2>📘 活用表</h2>
-    <div id="conjugation-table">選択後に表示されます</div>
-  </div>
+displayVerb();
+</script>
+</body>
+</html>
