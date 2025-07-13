@@ -9,7 +9,7 @@
     .question { font-size: 24px; margin: 20px 0; }
     .options button { margin: 5px; padding: 10px 20px; font-size: 18px; }
     .feedback { font-size: 18px; margin-top: 10px; }
-    .pattern, .translation, .example { margin-top: 5px; color: #444; }
+    .pattern, .translation, .example { margin-top: 5px; }
     #wrong-list { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ccc; }
     .wrong-word { margin: 5px 0; }
   </style>
@@ -42,15 +42,15 @@
       { infinitive: "leer", type: "規則", group: "-er", translation: "読む", example: "Leo muchos libros." },
       { infinitive: "escribir", type: "規則", group: "-ir", translation: "書く", example: "Escribimos un correo." },
 
-      { infinitive: "ser", type: "不規則", group: "-", translation: "〜である", example: "Yo soy estudiante.", pattern: "完全不規則" },
-      { infinitive: "estar", type: "不規則", group: "-ar", translation: "いる、ある", example: "Estoy en casa.", pattern: "完全不規則" },
-      { infinitive: "ir", type: "不規則", group: "-", translation: "行く", example: "Vamos al cine.", pattern: "完全不規則" },
-      { infinitive: "tener", type: "不規則", group: "-er", translation: "持つ", example: "Tengo un libro.", pattern: "yo不規則（tengo）＋語幹変化 e→ie" },
-      { infinitive: "decir", type: "不規則", group: "-ir", translation: "言う", example: "Digo la verdad.", pattern: "yo不規則（digo）＋語幹変化 e→i" },
-      { infinitive: "jugar", type: "不規則", group: "-ar", translation: "遊ぶ", example: "Jugamos al fútbol.", pattern: "語幹変化 u→ue" },
-      { infinitive: "cerrar", type: "不規則", group: "-ar", translation: "閉める", example: "Cierro la puerta.", pattern: "語幹変化 e→ie" },
-      { infinitive: "salir", type: "不規則", group: "-ir", translation: "出る", example: "Salgo de casa a las 8.", pattern: "yo不規則（salgo）" },
-      { infinitive: "poner", type: "不規則", group: "-er", translation: "置く", example: "Pongo la mesa.", pattern: "yo不規則（pongo）" },
+      { infinitive: "ser", type: "不規則", group: "-", translation: "〜である", example: "Yo <span style='color:red'>soy</span> estudiante.", pattern: "完全不規則" },
+      { infinitive: "estar", type: "不規則", group: "-ar", translation: "いる、ある", example: "<span style='color:red'>Estoy</span> en casa.", pattern: "完全不規則" },
+      { infinitive: "ir", type: "不規則", group: "-", translation: "行く", example: "<span style='color:red'>Vamos</span> al cine.", pattern: "完全不規則" },
+      { infinitive: "tener", type: "不規則", group: "-er", translation: "持つ", example: "Ten<span style='color:red'>go</span> un libro.", pattern: "yo不規則（tengo）＋語幹変化 e→ie" },
+      { infinitive: "decir", type: "不規則", group: "-ir", translation: "言う", example: "Di<span style='color:red'>go</span> la verdad.", pattern: "yo不規則（digo）＋語幹変化 e→i" },
+      { infinitive: "jugar", type: "不規則", group: "-ar", translation: "遊ぶ", example: "Ju<span style='color:red'>gamos</span> al fútbol.", pattern: "語幹変化 u→ue" },
+      { infinitive: "cerrar", type: "不規則", group: "-ar", translation: "閉める", example: "Cie<span style='color:red'>rro</span> la puerta.", pattern: "語幹変化 e→ie" },
+      { infinitive: "salir", type: "不規則", group: "-ir", translation: "出る", example: "Sal<span style='color:red'>go</span> de casa a las 8.", pattern: "yo不規則（salgo）" },
+      { infinitive: "poner", type: "不規則", group: "-er", translation: "置く", example: "Pon<span style='color:red'>go</span> la mesa.", pattern: "yo不規則（pongo）" },
 
       { infinitive: "levantarse", type: "再帰", group: "-ar", translation: "起きる", example: "Me levanto a las 7." },
       { infinitive: "acostarse", type: "再帰", group: "-ar", translation: "寝る", example: "Me acuesto tarde.", pattern: "語幹変化 o→ue＋再帰" },
@@ -70,9 +70,9 @@
       currentVerb = getRandomVerb();
       document.getElementById("verb").textContent = `次の動詞は何の種類？： ${currentVerb.infinitive}`;
       document.getElementById("feedback").textContent = "";
-      document.getElementById("pattern").textContent = "";
+      document.getElementById("pattern").innerHTML = "";
       document.getElementById("translation").textContent = "";
-      document.getElementById("example").textContent = "";
+      document.getElementById("example").innerHTML = "";
     }
 
     function checkAnswer(choice) {
@@ -89,19 +89,15 @@
         updateWrongList();
       }
 
-      // 👇 不規則動詞やパターンがある場合だけ表示！
-      if (currentVerb.type === "不規則" && currentVerb.pattern) {
-        patternBox.textContent = `🔍 不規則の種類：${currentVerb.pattern}`;
-      } else if (currentVerb.type === "再帰" && currentVerb.pattern) {
-        patternBox.textContent = `🔍 特徴：${currentVerb.pattern}`;
-      } else {
-        patternBox.textContent = "";
+      // ✅ 不規則や再帰の種類を赤く＆大きく表示
+      if ((currentVerb.type === "不規則" || currentVerb.type === "再帰") && currentVerb.pattern) {
+        patternBox.innerHTML = `<span style="color: red; font-size: 18px;">🔍 ${currentVerb.type === "不規則" ? "不規則の種類" : "特徴"}：${currentVerb.pattern}</span>`;
       }
     }
 
     function showDetails() {
       document.getElementById("translation").textContent = "意味：" + currentVerb.translation;
-      document.getElementById("example").textContent = "例文：" + currentVerb.example;
+      document.getElementById("example").innerHTML = "例文：" + currentVerb.example;
     }
 
     function nextQuestion() {
