@@ -48,6 +48,12 @@
       color: blue;
       min-height: 24px;
     }
+    #cycle-message {
+      margin-top: 20px;
+      font-size: 20px;
+      color: darkred;
+      font-weight: bold;
+    }
     @media screen and (max-width: 768px) {
       body { flex-direction: column; }
       button {
@@ -88,7 +94,7 @@
       <div id="wrongWords"></div>
     </div>
     <div id="notice"></div>
-<div id="cycle-message" style="margin-top:20px; font-size: 20px; color: darkred; font-weight: bold;"></div>
+    <div id="cycle-message"></div>
   </div>
 
   <div class="table-container">
@@ -97,9 +103,7 @@
   </div>
 
 <script>
-  // ✅ verbs 配列は別ファイルへ分離することも可能！
-  // （ここでは省略：前のメッセージ参照）
-  const verbs = [
+// const verbs = [
   { infinitive: "cantar", type: "規則", group: "-ar", translation: "歌う", example: "Yo canto una canción." },
   { infinitive: "trabajar", type: "規則", group: "-ar", translation: "働く", example: "Trabajo en una oficina." },
   { infinitive: "cenar", type: "規則", group: "-ar", translation: "夕食をとる", example: "Cenamos a las ocho." },
@@ -147,12 +151,19 @@
   { infinitive: "traer", type: "不規則", translation: "持ってくる", example: "Traigo mi cuaderno.", pattern: "yo不規則（traigo）" }
 ];
 
-  let currentVerb;
-  let wrongAnswers = [];
-  let remainingVerbs = [];
+let currentVerb;
+let wrongAnswers = [];
+let remainingVerbs = [];
 
-  function getRandomVerb() {
-  const noticeEl = document.getElementById("notice");
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function getRandomVerb() {
   if (remainingVerbs.length === 0) {
     document.getElementById("cycle-message").textContent = "🎉 全49語を一巡しました！再挑戦スタート！";
     remainingVerbs = shuffle([...verbs]);
@@ -161,113 +172,99 @@
   }
   return remainingVerbs.pop();
 }
+
+function displayVerb() {
+  currentVerb = getRandomVerb();
+  document.getElementById("verb").textContent = `次の動詞の種類は？： ${currentVerb.infinitive}`;
+  document.getElementById("feedback").textContent = "";
+  document.getElementById("pattern").innerHTML = currentVerb.pattern ? `🔍 特徴・パターン：<span style="color:red;">${currentVerb.pattern}</span>` : "";
+  document.getElementById("translation").textContent = "意味：" + currentVerb.translation;
+  document.getElementById("example").textContent = "例文：" + currentVerb.example;
+  document.getElementById("conjugation-table").innerHTML = "選択後に表示されます";
 }
 
-  function displayVerb() {
-    currentVerb = getRandomVerb();
-    document.getElementById("verb").textContent = `次の動詞の種類は？： ${currentVerb.infinitive}`;
-    document.getElementById("feedback").textContent = "";
-    document.getElementById("pattern").textContent = "";
-    document.getElementById("translation").textContent = "";
-    document.getElementById("example").textContent = "";
-    document.getElementById("conjugation-table").innerHTML = "選択後に表示されます";
-  }
+function nextQuestion() {
+  displayVerb();
+}
 
-  function checkAnswer(choice) {
-    const feedback = document.getElementById("feedback");
-    if (choice === currentVerb.type) {
-      feedback.textContent = "✅ 正解！";
-      feedback.style.color = "green";
-    } else if (choice === "分からない") {
-      feedback.textContent = `❓ 分からなかったね。正解：${currentVerb.type}`;
-      feedback.style.color = "gray";
-      wrongAnswers.push(currentVerb);
-      updateWrongList();
+function checkAnswer(choice) {
+  const feedback = document.getElementById("feedback");
+  if (choice === currentVerb.type) {
+    feedback.textContent = "✅ 正解！";
+    feedback.style.color = "green";
+  } else if (choice === "分からない") {
+    feedback.textContent = `❓ 分からなかったね。正解：${currentVerb.type}`;
+    feedback.style.color = "gray";
+    wrongAnswers.push(currentVerb);
+    updateWrongList();
+  } else {
+    feedback.textContent = `❌ 不正解！正解：${currentVerb.type}`;
+    feedback.style.color = "red";
+    wrongAnswers.push(currentVerb);
+    updateWrongList();
+  }
+  showConjugation(currentVerb.infinitive);
+}
+
+function updateWrongList() {
+  const container = document.getElementById("wrongWords");
+  container.innerHTML = "";
+  const unique = [...new Set(wrongAnswers.map(v => v.infinitive))];
+  unique.forEach(verb => {
+    const div = document.createElement("div");
+    div.className = "wrong-word";
+    div.textContent = verb;
+    container.appendChild(div);
+  });
+}
+
+function showConjugation(inf) {
+  const table = document.getElementById("conjugation-table");
+  const pronouns = ["yo", "tú", "él/ella", "nosotros", "vosotros", "ellos/ellas"];
+  const irregular = {
+    "ser": ["soy", "eres", "es", "somos", "sois", "son"],
+    "ir": ["voy", "vas", "va", "vamos", "vais", "van"],
+    "tener": ["tengo", "tienes", "tiene", "tenemos", "tenéis", "tienen"],
+    "estar": ["estoy", "estás", "está", "estamos", "estáis", "están"],
+    "hacer": ["hago", "haces", "hace", "hacemos", "hacéis", "hacen"],
+    "decir": ["digo", "dices", "dice", "decimos", "decís", "dicen"],
+    "venir": ["vengo", "vienes", "viene", "venimos", "venís", "vienen"],
+    "dormir": ["duermo", "duermes", "duerme", "dormimos", "dormís", "duermen"],
+    "preferir": ["prefiero", "prefieres", "prefiere", "preferimos", "preferís", "prefieren"],
+    "sentarse": ["me siento", "te sientas", "se sienta", "nos sentamos", "os sentáis", "se sientan"],
+    "acostarse": ["me acuesto", "te acuestas", "se acuesta", "nos acostamos", "os acostáis", "se acuestan"],
+    "vestirse": ["me visto", "te vistes", "se viste", "nos vestimos", "os vestís", "se visten"],
+    "sentirse": ["me siento", "te sientes", "se siente", "nos sentimos", "os sentís", "se sienten"],
+    "despertarse": ["me despierto", "te despiertas", "se despierta", "nos despertamos", "os despertáis", "se despiertan"],
+    "divertirse": ["me divierto", "te diviertes", "se divierte", "nos divertimos", "os divertís", "se divierten"]
+  };
+
+  if (irregular[inf]) {
+    const rows = irregular[inf].map((v, i) => `<tr><td>${pronouns[i]}</td><td>${v}</td></tr>`).join("");
+    table.innerHTML = `<table><tr><th>主語</th><th>現在形</th></tr>${rows}</table>`;
+  } else {
+    const stem = inf.replace(/(se)?$/, "").replace(/arse|erse|irse/, "").replace(/r$/, "");
+    let ending;
+    if (inf.endsWith("ar")) {
+      ending = ["o", "as", "a", "amos", "áis", "an"];
+    } else if (inf.endsWith("er")) {
+      ending = ["o", "es", "e", "emos", "éis", "en"];
+    } else if (inf.endsWith("ir")) {
+      ending = ["o", "es", "e", "imos", "ís", "en"];
     } else {
-      feedback.textContent = `❌ 不正解！正解：${currentVerb.type}`;
-      feedback.style.color = "red";
-      wrongAnswers.push(currentVerb);
-      updateWrongList();
+      table.innerHTML = "（活用未対応）";
+      return;
     }
-
-    if (currentVerb.pattern) {
-      document.getElementById("pattern").innerHTML = `🔍 特徴・パターン：<span style="color: red;">${currentVerb.pattern}</span>`;
-    }
-    document.getElementById("translation").textContent = "意味：" + currentVerb.translation;
-    document.getElementById("example").textContent = "例文：" + currentVerb.example;
-    showConjugation(currentVerb.infinitive);
+    const rows = pronouns.map((p, i) => `<tr><td>${p}</td><td>${stem + ending[i]}</td></tr>`).join("");
+    table.innerHTML = `<table><tr><th>主語</th><th>現在形</th></tr>${rows}</table>`;
   }
+}
 
-  function updateWrongList() {
-    const container = document.getElementById("wrongWords");
-    container.innerHTML = "";
-    const unique = [...new Set(wrongAnswers.map(v => v.infinitive))];
-    unique.forEach(verb => {
-      const div = document.createElement("div");
-      div.className = "wrong-word";
-      div.textContent = verb;
-      container.appendChild(div);
-    });
-  }
-
-  function nextQuestion() {
-    displayVerb();
-  }
-
-  function showConjugation(inf) {
-    const table = document.getElementById("conjugation-table");
-    const pronouns = ["yo", "tú", "él/ella", "nosotros", "vosotros", "ellos/ellas"];
-    const irregular = {
-      "ser": ["soy", "eres", "es", "somos", "sois", "son"],
-      "ir": ["voy", "vas", "va", "vamos", "vais", "van"],
-      "tener": ["tengo", "tienes", "tiene", "tenemos", "tenéis", "tienen"],
-      "estar": ["estoy", "estás", "está", "estamos", "estáis", "están"],
-      "hacer": ["hago", "haces", "hace", "hacemos", "hacéis", "hacen"],
-      "decir": ["digo", "dices", "dice", "decimos", "decís", "dicen"],
-      "venir": ["vengo", "vienes", "viene", "venimos", "venís", "vienen"],
-      "ver": ["veo", "ves", "ve", "vemos", "veis", "ven"],
-      "dormir": ["duermo", "duermes", "duerme", "dormimos", "dormís", "duermen"],
-      "preferir": ["prefiero", "prefieres", "prefiere", "preferimos", "preferís", "prefieren"],
-      "sentarse": ["me siento", "te sientas", "se sienta", "nos sentamos", "os sentáis", "se sientan"],
-      "acostarse": ["me acuesto", "te acuestas", "se acuesta", "nos acostamos", "os acostáis", "se acuestan"],
-      "vestirse": ["me visto", "te vistes", "se viste", "nos vestimos", "os vestís", "se visten"],
-      "sentirse": ["me siento", "te sientes", "se siente", "nos sentimos", "os sentís", "se sienten"],
-      "despertarse": ["me despierto", "te despiertas", "se despierta", "nos despertamos", "os despertáis", "se despiertan"],
-      "divertirse": ["me divierto", "te diviertes", "se divierte", "nos divertimos", "os divertís", "se divierten"]
-    };
-
-    if (irregular[inf]) {
-      const rows = irregular[inf].map((v, i) => `<tr><td>${pronouns[i]}</td><td>${v}</td></tr>`).join("");
-      table.innerHTML = `<table><tr><th>主語</th><th>現在形</th></tr>${rows}</table>`;
-    } else {
-      const stem = inf.replace(/(se)?$/, "").replace(/arse|erse|irse/, "").replace(/r$/, "");
-      let ending;
-      if (inf.endsWith("ar")) {
-        ending = ["o", "as", "a", "amos", "áis", "an"];
-      } else if (inf.endsWith("er")) {
-        ending = ["o", "es", "e", "emos", "éis", "en"];
-      } else if (inf.endsWith("ir")) {
-        ending = ["o", "es", "e", "imos", "ís", "en"];
-      } else {
-        table.innerHTML = "（活用未対応）";
-        return;
-      }
-      const rows = pronouns.map((p, i) => `<tr><td>${p}</td><td>${stem + ending[i]}</td></tr>`).join("");
-      table.innerHTML = `<table><tr><th>主語</th><th>現在形</th></tr>${rows}</table>`;
-    }
-  }
-
-  window.onload = function() {
+window.onload = function () {
   remainingVerbs = shuffle([...verbs]);
   displayVerb();
 };
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-}
+
 </script>
 </body>
 </html>
