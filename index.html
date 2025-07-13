@@ -221,5 +221,14 @@
         return;
       }
       const rows = pronouns.map((p, i) => `<tr><td>${p}</td><td>${stem + ending[i]}</td></tr>`).join("");
+      table.innerHTML = `<table><tr><th>主語</th><th>現在形</th></tr>${rows}</table>`;
+    }
+  }
+
+  window.onload = function() {
+    remainingVerbs = [...verbs];
+    displayVerb();
+  };
+</script>
 </body>
 </html>
