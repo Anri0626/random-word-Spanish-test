@@ -1,3 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>スペイン語動詞クイズ</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      margin: 0 auto;
+      max-width: 1200px;
+      display: flex;
+      flex-direction: row;
+      gap: 40px;
+    }
+    .quiz-container {
+      flex: 1;
+    }
+    h1 { text-align: center; }
+
+    .question { font-size: 24px; margin: 20px 0; }
+
+    button {
+      padding: 15px 30px;
+      font-size: 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 15px 10px 0 0;
+      transition: background-color 0.3s ease;
+      box-sizing: border-box;
+    }
+    button:hover {
+      background-color: #eee;
+    }
+
+    .feedback, .pattern, .translation, .example {
+      font-size: 18px;
+      margin-top: 10px;
+    }
+
+    .options button {
+      margin: 10px 10px 0 0;
+    }
+
+    #wrong-list {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #ccc;
+    }
+
+    .wrong-word {
+      margin: 5px 0;
+    }
+
+    .table-container {
+      flex: 0.8;
+      min-width: 300px;
+      font-size: 18px;
+    }
+
+    @media screen and (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+      button {
+        width: 100%;
+        font-size: 22px;
+        padding: 20px;
+        margin: 10px 0;
+      }
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    table td, table th {
+      border: 1px solid #ccc;
+      padding: 6px;
+    }
+
+    table th {
+      background-color: #f0f0f0;
+    }
+
+    #conjugation-table {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>スペイン語動詞クイズ（規則／不規則）</h1>
+    <div class="question" id="verb">Loading...</div>
+    <div class="options">
+      <button onclick="checkAnswer('規則')">規則</button>
+      <button onclick="checkAnswer('不規則')">不規則</button>
+      <button onclick="checkAnswer('分からない')">分からない</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <div class="pattern" id="pattern"></div>
+    <div class="translation" id="translation"></div>
+    <div class="example" id="example"></div>
+    <button onclick="nextQuestion()">次の問題へ ➤</button>
+    <div id="wrong-list">
+      <h3>❌ 間違えた動詞リスト</h3>
+      <div id="wrongWords"></div>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <h2>📘 活用表</h2>
+    <div id="conjugation-table">選択後に表示されます</div>
+  </div>
+<script>
+const verbs = [
+  // ✅ 規則動詞
+  { infinitive: "cantar", type: "規則", group: "-ar", translation: "歌う", example: "Yo canto una canción." },
+  { infinitive: "cenar", type: "規則", group: "-ar", translation: "夕食をとる", example: "Cenamos a las ocho." },
+  { infinitive: "comprar", type: "規則", group: "-ar", translation: "買う", example: "Compro pan en la tienda." },
+  { infinitive: "estudiar", type: "規則", group: "-ar", translation: "勉強する", example: "Estudian español." },
+  { infinitive: "tomar", type: "規則", group: "-ar", translation: "取る／飲む", example: "Tomamos café." },
+  { infinitive: "trabajar", type: "規則", group: "-ar", translation: "働く", example: "Trabajo en una oficina." },
+  { infinitive: "aprender", type: "規則", group: "-er", translation: "学ぶ", example: "Aprendemos japonés." },
+  { infinitive: "beber", type: "規則", group: "-er", translation: "飲む", example: "Bebo agua." },
+  { infinitive: "comprender", type: "規則", group: "-er", translation: "理解する", example: "¿Comprendes?" },
+  { infinitive: "leer", type: "規則", group: "-er", translation: "読む", example: "Leo muchos libros." },
+  { infinitive: "abrir", type: "規則", group: "-ir", translation: "開ける", example: "Abro la puerta." },
+  { infinitive: "escribir", type: "規則", group: "-ir", translation: "書く", example: "Escribimos un correo." },
+  { infinitive: "vivir", type: "規則", group: "-ir", translation: "住む", example: "Vivo en Tokio." },
+  { infinitive: "llamarse", type: "規則", group: "-ar", translation: "〜という名前である", example: "Me llamo Ana." },
+  { infinitive: "lavarse", type: "規則", group: "-ar", translation: "洗う（再帰）", example: "Me lavo las manos." },
+  { infinitive: "levantarse", type: "規則", group: "-ar", translation: "起きる（再帰）", example: "Me levanto a las siete." },
+  { infinitive: "peinarse", type: "規則", group: "-ar", translation: "髪をとかす（再帰）", example: "Me peino antes de salir." },
+  { infinitive: "quitarse", type: "規則", group: "-ar", translation: "脱ぐ／取り除く（再帰）", example: "Me quito el abrigo." },
+  { infinitive: "ducharse", type: "規則", group: "-ar", translation: "シャワーを浴びる（再帰）", example: "Me ducho rápido." },
+  { infinitive: "bañarse", type: "規則", group: "-ar", translation: "入浴する（再帰）", example: "Me baño por la noche." },
+
+  // 🔴 不規則動詞（再帰含む）
+  { infinitive: "ser", type: "不規則", translation: "〜である", example: "Soy estudiante.", pattern: "完全不規則" },
+  { infinitive: "ir", type: "不規則", translation: "行く", example: "Voy a la escuela.", pattern: "完全不規則" },
+  { infinitive: "tener", type: "不規則", translation: "持つ", example: "Tengo un libro.", pattern: "yo不規則＋語幹変化 e→ie" },
+  { infinitive: "hacer", type: "不規則", translation: "する", example: "Hago la tarea.", pattern: "yo不規則（hago）" },
+  { infinitive: "estar", type: "不規則", translation: "いる、ある", example: "Estoy cansado.", pattern: "完全不規則" },
+  { infinitive: "venir", type: "不規則", translation: "来る", example: "Vengo pronto.", pattern: "yo不規則＋語幹変化 e→ie" },
+  { infinitive: "decir", type: "不規則", translation: "言う", example: "Digo la verdad.", pattern: "yo不規則＋語幹変化 e→i" },
+  { infinitive: "dormir", type: "不規則", translation: "眠る", example: "Duermo ocho horas.", pattern: "語幹変化 o→ue" },
+  { infinitive: "preferir", type: "不規則", translation: "好む", example: "Prefiero té.", pattern: "語幹変化 e→ie" },
+  { infinitive: "sentarse", type: "不規則", translation: "座る（再帰）", example: "Me siento aquí.", pattern: "語幹変化 e→ie＋再帰" },
+  { infinitive: "acostarse", type: "不規則", translation: "寝る（再帰）", example: "Me acuesto tarde.", pattern: "語幹変化 o→ue＋再帰" },
+  { infinitive: "vestirse", type: "不規則", translation: "服を着る（再帰）", example: "Me visto rápido.", pattern: "語幹変化 e→i＋再帰" },
+  { infinitive: "sentirse", type: "不規則", translation: "感じる（再帰）", example: "Me siento bien.", pattern: "語幹変化 e→ie＋再帰" },
+  { infinitive: "despertarse", type: "不規則", translation: "目覚める（再帰）", example: "Me despierto temprano.", pattern: "語幹変化 e→ie＋再帰" },
+  { infinitive: "divertirse", type: "不規則", translation: "楽しむ（再帰）", example: "Me divierto mucho.", pattern: "語幹変化 e→ie＋再帰" },
+];
 let currentVerb;
 let wrongAnswers = [];
 
