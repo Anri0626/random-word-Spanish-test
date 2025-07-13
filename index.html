@@ -28,33 +28,73 @@
   <div class="translation" id="translation"></div>
   <div class="example" id="example"></div>
   <button onclick="nextQuestion()">次の問題へ ➤</button>
-
   <div id="wrong-list">
     <h3>❌ 間違えた動詞リスト</h3>
     <div id="wrongWords"></div>
   </div>
-
   <script>
     const verbs = [
-      { infinitive: "hablar", type: "規則", group: "-ar", translation: "話す", example: "Yo hablo español." },
-      { infinitive: "comer", type: "規則", group: "-er", translation: "食べる", example: "Nosotros comemos arroz." },
-      { infinitive: "vivir", type: "規則", group: "-ir", translation: "住む", example: "Ella vive en Madrid." },
+      // 🔵 規則動詞（17語）
+      { infinitive: "cantar", type: "規則", group: "-ar", translation: "歌う", example: "Yo canto una canción." },
+      { infinitive: "cenar", type: "規則", group: "-ar", translation: "夕食をとる", example: "Cenamos a las ocho." },
+      { infinitive: "comprar", type: "規則", group: "-ar", translation: "買う", example: "Compro pan en la tienda." },
+      { infinitive: "estudiar", type: "規則", group: "-ar", translation: "勉強する", example: "Estudian español." },
+      { infinitive: "tomar", type: "規則", group: "-ar", translation: "取る／飲む", example: "Tomamos café." },
+      { infinitive: "trabajar", type: "規則", group: "-ar", translation: "働く", example: "Trabajo en una oficina." },
+      { infinitive: "aprender", type: "規則", group: "-er", translation: "学ぶ", example: "Aprendemos japonés." },
+      { infinitive: "beber", type: "規則", group: "-er", translation: "飲む", example: "Bebo agua." },
+      { infinitive: "comprender", type: "規則", group: "-er", translation: "理解する", example: "¿Comprendes?" },
       { infinitive: "leer", type: "規則", group: "-er", translation: "読む", example: "Leo muchos libros." },
+      { infinitive: "abrir", type: "規則", group: "-ir", translation: "開ける", example: "Abro la puerta." },
+      { infinitive: "asistir", type: "規則", group: "-ir", translation: "出席する", example: "Asisto a clase." },
       { infinitive: "escribir", type: "規則", group: "-ir", translation: "書く", example: "Escribimos un correo." },
+      { infinitive: "partir", type: "規則", group: "-ir", translation: "出発する", example: "Parten mañana." },
+      { infinitive: "recibir", type: "規則", group: "-ir", translation: "受け取る", example: "Recibimos una carta." },
+      { infinitive: "subir", type: "規則", group: "-ir", translation: "登る／上がる", example: "Subo las escaleras." },
+      { infinitive: "vivir", type: "規則", group: "-ir", translation: "住む", example: "Vivo en Tokio." },
 
-      { infinitive: "ser", type: "不規則", group: "-", translation: "〜である", example: "Yo <span style='color:red'>soy</span> estudiante.", pattern: "完全不規則" },
-      { infinitive: "estar", type: "不規則", group: "-ar", translation: "いる、ある", example: "<span style='color:red'>Estoy</span> en casa.", pattern: "完全不規則" },
-      { infinitive: "ir", type: "不規則", group: "-", translation: "行く", example: "<span style='color:red'>Vamos</span> al cine.", pattern: "完全不規則" },
-      { infinitive: "tener", type: "不規則", group: "-er", translation: "持つ", example: "Ten<span style='color:red'>go</span> un libro.", pattern: "yo不規則（tengo）＋語幹変化 e→ie" },
-      { infinitive: "decir", type: "不規則", group: "-ir", translation: "言う", example: "Di<span style='color:red'>go</span> la verdad.", pattern: "yo不規則（digo）＋語幹変化 e→i" },
-      { infinitive: "jugar", type: "不規則", group: "-ar", translation: "遊ぶ", example: "Ju<span style='color:red'>gamos</span> al fútbol.", pattern: "語幹変化 u→ue" },
-      { infinitive: "cerrar", type: "不規則", group: "-ar", translation: "閉める", example: "Cie<span style='color:red'>rro</span> la puerta.", pattern: "語幹変化 e→ie" },
-      { infinitive: "salir", type: "不規則", group: "-ir", translation: "出る", example: "Sal<span style='color:red'>go</span> de casa a las 8.", pattern: "yo不規則（salgo）" },
-      { infinitive: "poner", type: "不規則", group: "-er", translation: "置く", example: "Pon<span style='color:red'>go</span> la mesa.", pattern: "yo不規則（pongo）" },
+      // 🔴 不規則動詞（26語）
+      { infinitive: "ser", type: "不規則", group: "-", translation: "〜である", example: "Soy estudiante.", pattern: "完全不規則" },
+      { infinitive: "estar", type: "不規則", group: "-ar", translation: "いる、ある", example: "Estoy cansado.", pattern: "完全不規則" },
+      { infinitive: "ir", type: "不規則", group: "-", translation: "行く", example: "Voy a la escuela.", pattern: "完全不規則" },
+      { infinitive: "tener", type: "不規則", group: "-er", translation: "持つ", example: "Tengo un libro.", pattern: "yo不規則（tengo）＋語幹変化 e→ie" },
+      { infinitive: "decir", type: "不規則", group: "-ir", translation: "言う", example: "Digo la verdad.", pattern: "yo不規則（digo）＋語幹変化 e→i" },
+      { infinitive: "hacer", type: "不規則", group: "-er", translation: "する", example: "Hago la tarea.", pattern: "yo不規則（hago）" },
+      { infinitive: "salir", type: "不規則", group: "-ir", translation: "出る", example: "Salgo de casa.", pattern: "yo不規則（salgo）" },
+      { infinitive: "poner", type: "不規則", group: "-er", translation: "置く", example: "Pongo la mesa.", pattern: "yo不規則（pongo）" },
+      { infinitive: "conocer", type: "不規則", group: "-er", translation: "知っている", example: "Conozco a María.", pattern: "yo不規則（conozco）" },
+      { infinitive: "conducir", type: "不規則", group: "-ir", translation: "運転する", example: "Conduzco un coche.", pattern: "yo不規則（conduzco）" },
+      { infinitive: "ver", type: "不規則", group: "-er", translation: "見る", example: "Veo la televisión.", pattern: "yo不規則（veo）" },
+      { infinitive: "dar", type: "不規則", group: "-ar", translation: "与える", example: "Doy un regalo.", pattern: "yo不規則（doy）" },
+      { infinitive: "traer", type: "不規則", group: "-er", translation: "持ってくる", example: "Traigo la mochila.", pattern: "yo不規則（traigo）" },
+      { infinitive: "cerrar", type: "不規則", group: "-ar", translation: "閉める", example: "Cierro la puerta.", pattern: "語幹変化 e→ie" },
+      { infinitive: "empezar", type: "不規則", group: "-ar", translation: "始める", example: "Empiezo ahora.", pattern: "語幹変化 e→ie" },
+      { infinitive: "pensar", type: "不規則", group: "-ar", translation: "考える", example: "Pienso mucho.", pattern: "語幹変化 e→ie" },
+      { infinitive: "entender", type: "不規則", group: "-er", translation: "理解する", example: "Entiendo bien.", pattern: "語幹変化 e→ie" },
+      { infinitive: "preferir", type: "不規則", group: "-ir", translation: "好む", example: "Prefiero té.", pattern: "語幹変化 e→ie" },
+      { infinitive: "contar", type: "不規則", group: "-ar", translation: "数える／語る", example: "Cuento hasta diez.", pattern: "語幹変化 o→ue" },
+      { infinitive: "dormir", type: "不規則", group: "-ir", translation: "眠る", example: "Duermo ocho horas.", pattern: "語幹変化 o→ue" },
+      { infinitive: "poder", type: "不規則", group: "-er", translation: "〜できる", example: "Puedo hablar español.", pattern: "語幹変化 o→ue" },
+      { infinitive: "volver", type: "不規則", group: "-er", translation: "戻る", example: "Vuelvo pronto.", pattern: "語幹変化 o→ue" },
+      { infinitive: "morir", type: "不規則", group: "-ir", translation: "死ぬ", example: "Muere en la película.", pattern: "語幹変化 o→ue" },
+      { infinitive: "pedir", type: "不規則", group: "-ir", translation: "頼む", example: "Pido ayuda.", pattern: "語幹変化 e→i" },
+      { infinitive: "servir", type: "不規則", group: "-ir", translation: "仕える／出す", example: "Sirvo la comida.", pattern: "語幹変化 e→i" },
+      { infinitive: "oír", type: "不規則", group: "-ir", translation: "聞く", example: "Oigo música.", pattern: "yo不規則（oigo）＋綴り変化" },
+      { infinitive: "saber", type: "不規則", group: "-er", translation: "知っている", example: "Sé la respuesta.", pattern: "yo不規則（sé）" },
+      { infinitive: "querer", type: "不規則", group: "-er", translation: "欲しい／〜したい", example: "Quiero un café.", pattern: "語幹変化 e→ie" },
 
-      { infinitive: "levantarse", type: "再帰", group: "-ar", translation: "起きる", example: "Me levanto a las 7." },
-      { infinitive: "acostarse", type: "再帰", group: "-ar", translation: "寝る", example: "Me acuesto tarde.", pattern: "語幹変化 o→ue＋再帰" },
+      // 🟢 再帰動詞（12語）
       { infinitive: "bañarse", type: "再帰", group: "-ar", translation: "入浴する", example: "Me baño por la noche." },
+      { infinitive: "ducharse", type: "再帰", group: "-ar", translation: "シャワーを浴びる", example: "Me ducho rápido." },
+      { infinitive: "lavarse", type: "再帰", group: "-ar", translation: "洗う", example: "Me lavo las manos." },
+      { infinitive: "levantarse", type: "再帰", group: "-ar", translation: "起きる", example: "Me levanto a las siete." },
+      { infinitive: "peinarse", type: "再帰", group: "-ar", translation: "髪をとかす", example: "Me peino antes de salir." },
+      { infinitive: "quitarse", type: "再帰", group: "-ar", translation: "脱ぐ／取り除く", example: "Me quito el abrigo." },
+      { infinitive: "divertirse", type: "再帰", group: "-ir", translation: "楽しむ", example: "Me divierto mucho.", pattern: "語幹変化 e→ie＋再帰" },
+      { infinitive: "sentarse", type: "再帰", group: "-ar", translation: "座る", example: "Me siento aquí.", pattern: "語幹変化 e→ie＋再帰" },
+      { infinitive: "sentirse", type: "再帰", group: "-ir", translation: "感じる", example: "Me siento bien.", pattern: "語幹変化 e→ie＋再帰" },
+      { infinitive: "despertarse", type: "再帰", group: "-ar", translation: "目覚める", example: "Me despierto temprano.", pattern: "語幹変化 e→ie＋再帰" },
+      { infinitive: "acostarse", type: "再帰", group: "-ar", translation: "寝る", example: "Me acuesto tarde.", pattern: "語幹変化 o→ue＋再帰" },
       { infinitive: "vestirse", type: "再帰", group: "-ir", translation: "服を着る", example: "Me visto rápido.", pattern: "語幹変化 e→i＋再帰" },
       { infinitive: "llamarse", type: "再帰", group: "-ar", translation: "〜という名前である", example: "Me llamo Ana." }
     ];
@@ -89,9 +129,8 @@
         updateWrongList();
       }
 
-      // ✅ 不規則や再帰の種類を赤く＆大きく表示
       if ((currentVerb.type === "不規則" || currentVerb.type === "再帰") && currentVerb.pattern) {
-        patternBox.innerHTML = `<span style="color: red; font-size: 18px;">🔍 ${currentVerb.type === "不規則" ? "不規則の種類" : "特徴"}：${currentVerb.pattern}</span>`;
+        patternBox.innerHTML = `<span style=\"color: red; font-size: 18px;\">🔍 ${currentVerb.type === "不規則" ? "不規則の種類" : "特徴"}：${currentVerb.pattern}</span>`;
       }
     }
 
