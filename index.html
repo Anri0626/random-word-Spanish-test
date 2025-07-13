@@ -154,17 +154,12 @@
   function getRandomVerb() {
   const noticeEl = document.getElementById("notice");
   if (remainingVerbs.length === 0) {
-    noticeEl.textContent = "";
     document.getElementById("cycle-message").textContent = "🎉 全49語を一巡しました！再挑戦スタート！";
     remainingVerbs = shuffle([...verbs]);
   } else {
-    noticeEl.textContent = "";
     document.getElementById("cycle-message").textContent = "";
   }
-  const index = Math.floor(Math.random() * remainingVerbs.length);
-  const selected = remainingVerbs[index];
-  remainingVerbs.splice(index, 1);
-  return selected;
+  return remainingVerbs.pop();
 }
 }
 
