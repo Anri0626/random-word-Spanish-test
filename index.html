@@ -61,54 +61,125 @@
     <h3>❌ 間違えた動詞リスト</h3>
     <div id="wrongWords"></div>
   </div>
-
   <script>
     const verbs = [
-      // 規則動詞（isReflexive: false）
-      { infinitive: "cantar", type: "規則", isReflexive: false, group: "-ar", translation: "歌う", example: "Yo canto una canción." },
-      { infinitive: "cenar", type: "規則", isReflexive: false, group: "-ar", translation: "夕食をとる", example: "Cenamos a las ocho." },
-      { infinitive: "comprar", type: "規則", isReflexive: false, group: "-ar", translation: "買う", example: "Compro pan en la tienda." },
-      { infinitive: "estudiar", type: "規則", isReflexive: false, group: "-ar", translation: "勉強する", example: "Estudian español." },
-      { infinitive: "tomar", type: "規則", isReflexive: false, group: "-ar", translation: "取る／飲む", example: "Tomamos café." },
-      { infinitive: "trabajar", type: "規則", isReflexive: false, group: "-ar", translation: "働く", example: "Trabajo en una oficina." },
-      { infinitive: "aprender", type: "規則", isReflexive: false, group: "-er", translation: "学ぶ", example: "Aprendemos japonés." },
-      { infinitive: "beber", type: "規則", isReflexive: false, group: "-er", translation: "飲む", example: "Bebo agua." },
-      { infinitive: "comprender", type: "規則", isReflexive: false, group: "-er", translation: "理解する", example: "¿Comprendes?" },
-      { infinitive: "leer", type: "規則", isReflexive: false, group: "-er", translation: "読む", example: "Leo muchos libros." },
-      { infinitive: "abrir", type: "規則", isReflexive: false, group: "-ir", translation: "開ける", example: "Abro la puerta." },
-      { infinitive: "asistir", type: "規則", isReflexive: false, group: "-ir", translation: "出席する", example: "Asisto a clase." },
-      { infinitive: "escribir", type: "規則", isReflexive: false, group: "-ir", translation: "書く", example: "Escribimos un correo." },
-      { infinitive: "partir", type: "規則", isReflexive: false, group: "-ir", translation: "出発する", example: "Parten mañana." },
-      { infinitive: "recibir", type: "規則", isReflexive: false, group: "-ir", translation: "受け取る", example: "Recibimos una carta." },
-      { infinitive: "subir", type: "規則", isReflexive: false, group: "-ir", translation: "登る／上がる", example: "Subo las escaleras." },
-      { infinitive: "vivir", type: "規則", isReflexive: false, group: "-ir", translation: "住む", example: "Vivo en Tokio." },
+      // 規則動詞（再帰もここにisReflexive:trueで含む）
+      { infinitive: "cantar", type: "規則", isReflexive: false, translation: "歌う", example: "Yo canto una canción." },
+      { infinitive: "cenar", type: "規則", isReflexive: false, translation: "夕食をとる", example: "Cenamos a las ocho." },
+      { infinitive: "comprar", type: "規則", isReflexive: false, translation: "買う", example: "Compro pan en la tienda." },
+      { infinitive: "estudiar", type: "規則", isReflexive: false, translation: "勉強する", example: "Estudian español." },
+      { infinitive: "tomar", type: "規則", isReflexive: false, translation: "取る／飲む", example: "Tomamos café." },
+      { infinitive: "trabajar", type: "規則", isReflexive: false, translation: "働く", example: "Trabajo en una oficina." },
+      { infinitive: "aprender", type: "規則", isReflexive: false, translation: "学ぶ", example: "Aprendemos japonés." },
+      { infinitive: "beber", type: "規則", isReflexive: false, translation: "飲む", example: "Bebo agua." },
+      { infinitive: "comprender", type: "規則", isReflexive: false, translation: "理解する", example: "¿Comprendes?" },
+      { infinitive: "leer", type: "規則", isReflexive: false, translation: "読む", example: "Leo muchos libros." },
+      { infinitive: "abrir", type: "規則", isReflexive: false, translation: "開ける", example: "Abro la puerta." },
+      { infinitive: "asistir", type: "規則", isReflexive: false, translation: "出席する", example: "Asisto a clase." },
+      { infinitive: "escribir", type: "規則", isReflexive: false, translation: "書く", example: "Escribimos un correo." },
+      { infinitive: "partir", type: "規則", isReflexive: false, translation: "出発する", example: "Parten mañana." },
+      { infinitive: "recibir", type: "規則", isReflexive: false, translation: "受け取る", example: "Recibimos una carta." },
+      { infinitive: "subir", type: "規則", isReflexive: false, translation: "登る／上がる", example: "Subo las escaleras." },
+      { infinitive: "vivir", type: "規則", isReflexive: false, translation: "住む", example: "Vivo en Tokio." },
 
-      // 不規則動詞（isReflexive: false）
-      { infinitive: "ser", type: "不規則", isReflexive: false, group: "-", translation: "〜である", example: "Soy estudiante.", pattern: "完全不規則" },
-      { infinitive: "estar", type: "不規則", isReflexive: false, group: "-ar", translation: "いる、ある", example: "Estoy cansado.", pattern: "完全不規則" },
-      { infinitive: "ir", type: "不規則", isReflexive: false, group: "-", translation: "行く", example: "Voy a la escuela.", pattern: "完全不規則" },
-      { infinitive: "tener", type: "不規則", isReflexive: false, group: "-er", translation: "持つ", example: "Tengo un libro.", pattern: "yo不規則（tengo）＋語幹変化 e→ie" },
-      { infinitive: "decir", type: "不規則", isReflexive: false, group: "-ir", translation: "言う", example: "Digo la verdad.", pattern: "yo不規則（digo）＋語幹変化 e→i" },
-      { infinitive: "hacer", type: "不規則", isReflexive: false, group: "-er", translation: "する", example: "Hago la tarea.", pattern: "yo不規則（hago）" },
-      { infinitive: "salir", type: "不規則", isReflexive: false, group: "-ir", translation: "出る", example: "Salgo de casa.", pattern: "yo不規則（salgo）" },
-      { infinitive: "poner", type: "不規則", isReflexive: false, group: "-er", translation: "置く", example: "Pongo la mesa.", pattern: "yo不規則（pongo）" },
-      { infinitive: "conocer", type: "不規則", isReflexive: false, group: "-er", translation: "知っている", example: "Conozco a María.", pattern: "yo不規則（conozco）" },
-      { infinitive: "conducir", type: "不規則", isReflexive: false, group: "-ir", translation: "運転する", example: "Conduzco un coche.", pattern: "yo不規則（conduzco）" },
-      { infinitive: "ver", type: "不規則", isReflexive: false, group: "-er", translation: "見る", example: "Veo la televisión.", pattern: "yo不規則（veo）" },
-      { infinitive: "dar", type: "不規則", isReflexive: false, group: "-ar", translation: "与える", example: "Doy un regalo.", pattern: "yo不規則（doy）" },
-      { infinitive: "traer", type: "不規則", isReflexive: false, group: "-er", translation: "持ってくる", example: "Traigo la mochila.", pattern: "yo不規則（traigo）" },
-      { infinitive: "cerrar", type: "不規則", isReflexive: false, group: "-ar", translation: "閉める", example: "Cierro la puerta.", pattern: "語幹変化 e→ie" },
-      { infinitive: "empezar", type: "不規則", isReflexive: false, group: "-ar", translation: "始める", example: "Empiezo ahora.", pattern: "語幹変化 e→ie" },
-      { infinitive: "pensar", type: "不規則", isReflexive: false, group: "-ar", translation: "考える", example: "Pienso mucho.", pattern: "語幹変化 e→ie" },
-      { infinitive: "entender", type: "不規則", isReflexive: false, group: "-er", translation: "理解する", example: "Entiendo bien.", pattern: "語幹変化 e→ie" },
-      { infinitive: "preferir", type: "不規則", isReflexive: false, group: "-ir", translation: "好む", example: "Prefiero té.", pattern: "語幹変化 e→ie" },
-      { infinitive: "contar", type: "不規則", isReflexive: false, group: "-ar", translation: "数える／語る", example: "Cuento hasta diez.", pattern: "語幹変化 o→ue" },
-      { infinitive: "dormir", type: "不規則", isReflexive: false, group: "-ir", translation: "眠る", example: "Duermo ocho horas.", pattern: "語幹変化 o→ue" },
-      { infinitive: "poder", type: "不規則", isReflexive: false, group: "-er", translation: "〜できる", example: "Puedo hablar español.", pattern: "語幹変化 o→ue" },
-      { infinitive: "volver", type: "不規則", isReflexive: false, group: "-er", translation: "戻る", example: "Vuelvo pronto.", pattern: "語幹変化 o→ue" },
-      { infinitive: "morir", type: "不規則", isReflexive: false, group: "-ir", translation: "死ぬ", example: "Muere en la película.", pattern: "語幹変化 o→ue" },
-      { infinitive: "pedir", type: "不規則", isReflexive: false, group: "-ir", translation: "頼む", example: "Pido ayuda.", pattern: "語幹変化 e→i" },
-      { infinitive: "servir", type: "不規則", isReflexive: false, group: "-ir", translation: "仕える／出す", example: "Sirvo la comida.", pattern: "語幹変化 e→i" },
-      { infinitive: "oír", type: "不規則", isReflexive: false, group: "-ir", translation: "聞く", example: "Oigo música.", pattern: "yo不規則（oigo）＋綴り変化" },
-      { infinitive: "saber", type: "不規則", isReflexive: false, group: "-er", translation: "知っている", example: "Sé la respuesta.", pattern: "yo不規則（sé）" },
-      { infinitive: "querer", type: "不規則", isReflexive: false, group: "-er", translation: "欲しい／〜したい", example: "Quiero un café.", pattern: "語幹変化 e→ie"
+      // 再帰動詞（規則タイプのもの例）
+      { infinitive: "levantarse", type: "規則", isReflexive: true, translation: "起きる", example: "Me levanto a las siete." },
+      { infinitive: "bañarse", type: "規則", isReflexive: true, translation: "入浴する", example: "Me baño por la noche." },
+
+      // 不規則動詞
+      { infinitive: "ser", type: "不規則", isReflexive: false, translation: "〜である", example: "Soy estudiante.", pattern: "完全不規則" },
+      { infinitive: "estar", type: "不規則", isReflexive: false, translation: "いる、ある", example: "Estoy cansado.", pattern: "完全不規則" },
+      { infinitive: "ir", type: "不規則", isReflexive: false, translation: "行く", example: "Voy a la escuela.", pattern: "完全不規則" },
+      { infinitive: "tener", type: "不規則", isReflexive: false, translation: "持つ", example: "Tengo un libro.", pattern: "yo不規則（tengo）＋語幹変化 e→ie" },
+      { infinitive: "decir", type: "不規則", isReflexive: false, translation: "言う", example: "Digo la verdad.", pattern: "yo不規則（digo）＋語幹変化 e→i" },
+      { infinitive: "hacer", type: "不規則", isReflexive: false, translation: "する", example: "Hago la tarea.", pattern: "yo不規則（hago）" },
+      { infinitive: "salir", type: "不規則", isReflexive: false, translation: "出る", example: "Salgo de casa.", pattern: "yo不規則（salgo）" },
+      { infinitive: "poner", type: "不規則", isReflexive: false, translation: "置く", example: "Pongo la mesa.", pattern: "yo不規則（pongo）" },
+      { infinitive: "conocer", type: "不規則", isReflexive: false, translation: "知っている", example: "Conozco a María.", pattern: "yo不規則（conozco）" },
+      { infinitive: "conducir", type: "不規則", isReflexive: false, translation: "運転する", example: "Conduzco un coche.", pattern: "yo不規則（conduzco）" },
+      { infinitive: "ver", type: "不規則", isReflexive: false, translation: "見る", example: "Veo la televisión.", pattern: "yo不規則（veo）" },
+      { infinitive: "dar", type: "不規則", isReflexive: false, translation: "与える", example: "Doy un regalo.", pattern: "yo不規則（doy）" },
+      { infinitive: "traer", type: "不規則", isReflexive: false, translation: "持ってくる", example: "Traigo la mochila.", pattern: "yo不規則（traigo）" },
+      { infinitive: "cerrar", type: "不規則", isReflexive: false, translation: "閉める", example: "Cierro la puerta.", pattern: "語幹変化 e→ie" },
+      { infinitive: "empezar", type: "不規則", isReflexive: false, translation: "始める", example: "Empiezo ahora.", pattern: "語幹変化 e→ie" },
+      { infinitive: "pensar", type: "不規則", isReflexive: false, translation: "考える", example: "Pienso mucho.", pattern: "語幹変化 e→ie" },
+      { infinitive: "entender", type: "不規則", isReflexive: false, translation: "理解する", example: "Entiendo bien.", pattern: "語幹変化 e→ie" },
+      { infinitive: "preferir", type: "不規則", isReflexive: false, translation: "好む", example: "Prefiero té.", pattern: "語幹変化 e→ie" },
+      { infinitive: "contar", type: "不規則", isReflexive: false, translation: "数える／語る", example: "Cuento hasta diez.", pattern: "語幹変化 o→ue" },
+      { infinitive: "dormir", type: "不規則", isReflexive: false, translation: "眠る", example: "Duermo ocho horas.", pattern: "語幹変化 o→ue" },
+      { infinitive: "poder", type: "不規則", isReflexive: false, translation: "〜できる", example: "Puedo hablar español.", pattern: "語幹変化 o→ue" },
+      { infinitive: "volver", type: "不規則", isReflexive: false, translation: "戻る", example: "Vuelvo pronto.", pattern: "語幹変化 o→ue" },
+      { infinitive: "morir", type: "不規則", isReflexive: false, translation: "死ぬ", example: "Muere en la película.", pattern: "語幹変化 o→ue" },
+      { infinitive: "pedir", type: "不規則", isReflexive: false, translation: "頼む", example: "Pido ayuda.", pattern: "語幹変化 e→i" },
+      { infinitive: "servir", type: "不規則", isReflexive: false, translation: "仕える／出す", example: "Sirvo la comida.", pattern: "語幹変化 e→i" },
+      { infinitive: "oír", type: "不規則", isReflexive: false, translation: "聞く", example: "Oigo música.", pattern: "yo不規則（oigo）＋綴り変化" },
+      { infinitive: "saber", type: "不規則", isReflexive: false, translation: "知っている", example: "Sé la respuesta.", pattern: "yo不規則（sé）" },
+      { infinitive: "querer", type: "不規則", isReflexive: false, translation: "欲しい／〜したい", example: "Quiero un café.", pattern: "語幹変化 e→ie" }
+    ];
+
+    let currentVerb;
+    let wrongAnswers = [];
+
+    function getRandomVerb() {
+      return verbs[Math.floor(Math.random() * verbs.length)];
+    }
+
+    function displayVerb() {
+      currentVerb = getRandomVerb();
+      const reflexiveHint = currentVerb.isReflexive ? "（再帰動詞です）" : "";
+      document.getElementById("verb").textContent = `次の動詞は何の種類？： ${currentVerb.infinitive} ${reflexiveHint}`;
+      document.getElementById("feedback").textContent = "";
+      document.getElementById("pattern").innerHTML = "";
+      document.getElementById("translation").textContent = "";
+      document.getElementById("example").innerHTML = "";
+    }
+
+    function checkAnswer(choice) {
+      const feedback = document.getElementById("feedback");
+      const patternBox = document.getElementById("pattern");
+
+      if (choice === currentVerb.type) {
+        feedback.textContent = "✅ 正解！";
+        feedback.style.color = "green";
+      } else {
+        feedback.textContent = `❌ 不正解！正解：${currentVerb.type}`;
+        feedback.style.color = "red";
+        wrongAnswers.push(currentVerb);
+        updateWrongList();
+      }
+
+      if (currentVerb.pattern) {
+        patternBox.innerHTML = `<span style="color: red; font-size: 18px;">🔍 不規則の種類：${currentVerb.pattern}</span>`;
+      } else {
+        patternBox.innerHTML = "";
+      }
+
+      showDetails();
+    }
+
+    function showDetails() {
+      document.getElementById("translation").textContent = "意味：" + currentVerb.translation;
+      document.getElementById("example").innerHTML = "例文：" + currentVerb.example;
+    }
+
+    function nextQuestion() {
+      displayVerb();
+    }
+
+    function updateWrongList() {
+      const container = document.getElementById("wrongWords");
+      container.innerHTML = "";
+      const unique = [...new Set(wrongAnswers.map(v => v.infinitive))];
+      unique.forEach(verb => {
+        const div = document.createElement("div");
+        div.className = "wrong-word";
+        div.textContent = verb;
+        container.appendChild(div);
+      });
+    }
+
+    // 最初の問題表示
+    displayVerb();
+  </script>
+</body>
+</html>
