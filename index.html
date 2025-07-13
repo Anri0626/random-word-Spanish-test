@@ -7,61 +7,90 @@
     body {
       font-family: sans-serif;
       padding: 20px;
-      max-width: 1000px;
-      margin: auto;
+      margin: 0 auto;
+      max-width: 1200px;
       display: flex;
       flex-direction: row;
-      gap: 30px;
+      gap: 40px;
     }
-    .main {
+    .quiz-container {
       flex: 1;
     }
-    .question {
-      font-size: 24px;
-      margin: 20px 0;
-    }
+    h1 { text-align: center; }
+
+    .question { font-size: 24px; margin: 20px 0; }
+
     button {
       padding: 15px 30px;
       font-size: 20px;
       border-radius: 8px;
       cursor: pointer;
-      margin: 10px;
+      margin: 15px 10px 0 0;
       transition: background-color 0.3s ease;
       box-sizing: border-box;
     }
     button:hover {
       background-color: #eee;
     }
+
     .feedback, .pattern, .translation, .example {
       font-size: 18px;
       margin-top: 10px;
     }
-    .wrong-word { margin: 5px 0; }
+
+    .options button {
+      margin: 10px 10px 0 0;
+    }
+
     #wrong-list {
       margin-top: 30px;
       padding-top: 20px;
       border-top: 1px solid #ccc;
     }
-    .conjugation-box {
-      flex: 0 0 300px;
-      border-left: 1px solid #ccc;
-      padding-left: 20px;
+
+    .wrong-word {
+      margin: 5px 0;
     }
-    @media screen and (max-width: 800px) {
+
+    .table-container {
+      flex: 0.8;
+      min-width: 300px;
+      font-size: 18px;
+    }
+
+    @media screen and (max-width: 768px) {
       body {
         flex-direction: column;
       }
-      .conjugation-box {
-        border-left: none;
-        border-top: 1px solid #ccc;
-        padding-left: 0;
-        padding-top: 20px;
+      button {
+        width: 100%;
+        font-size: 22px;
+        padding: 20px;
+        margin: 10px 0;
       }
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    table td, table th {
+      border: 1px solid #ccc;
+      padding: 6px;
+    }
+
+    table th {
+      background-color: #f0f0f0;
+    }
+
+    #conjugation-table {
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <div class="main">
+  <div class="quiz-container">
     <h1>スペイン語動詞クイズ（規則／不規則）</h1>
     <div class="question" id="verb">Loading...</div>
     <div class="options">
@@ -79,97 +108,8 @@
       <div id="wrongWords"></div>
     </div>
   </div>
-  <div class="conjugation-box">
-    <h2>活用表</h2>
-    <div id="conjugation"></div>
+
+  <div class="table-container">
+    <h2>📘 活用表</h2>
+    <div id="conjugation-table">選択後に表示されます</div>
   </div>
-
-  <script>
-    const verbs = [
-      { infinitive: "cantar", type: "規則", group: "-ar", translation: "歌う", example: "Yo canto una canción." },
-      { infinitive: "comer", type: "規則", group: "-er", translation: "食べる", example: "Comes bien." },
-      { infinitive: "vivir", type: "規則", group: "-ir", translation: "住む", example: "Vivo en Tokio." },
-      { infinitive: "ser", type: "不規則", group: "-", translation: "〜である", example: "Soy estudiante.", pattern: "完全不規則" },
-      { infinitive: "ir", type: "不規則", group: "-", translation: "行く", example: "Voy a la escuela.", pattern: "完全不規則" },
-      { infinitive: "tener", type: "不規則", group: "-er", translation: "持つ", example: "Tengo un libro.", pattern: "yo不規則＋語幹変化" },
-      { infinitive: "decir", type: "不規則", group: "-ir", translation: "言う", example: "Digo la verdad.", pattern: "yo不規則＋語幹変化" }
-    ];
-
-    const conjugations = {
-      "cantar": ["canto", "cantas", "canta", "cantamos", "cantáis", "cantan"],
-      "comer": ["como", "comes", "come", "comemos", "coméis", "comen"],
-      "vivir": ["vivo", "vives", "vive", "vivimos", "vivís", "viven"],
-      "ser": ["soy", "eres", "es", "somos", "sois", "son"],
-      "ir": ["voy", "vas", "va", "vamos", "vais", "van"],
-      "tener": ["tengo", "tienes", "tiene", "tenemos", "tenéis", "tienen"],
-      "decir": ["digo", "dices", "dice", "decimos", "decís", "dicen"]
-    };
-
-    let currentVerb;
-    let wrongAnswers = [];
-
-    function getRandomVerb() {
-      return verbs[Math.floor(Math.random() * verbs.length)];
-    }
-
-    function displayVerb() {
-      currentVerb = getRandomVerb();
-      document.getElementById("verb").textContent = `次の動詞は何の種類？： ${currentVerb.infinitive}`;
-      document.getElementById("feedback").textContent = "";
-      document.getElementById("pattern").textContent = "";
-      document.getElementById("translation").textContent = "";
-      document.getElementById("example").textContent = "";
-      document.getElementById("conjugation").innerHTML = "";
-    }
-
-    function checkAnswer(choice) {
-      const feedback = document.getElementById("feedback");
-      const patternBox = document.getElementById("pattern");
-
-      if (choice === currentVerb.type || choice === "分からない") {
-        feedback.textContent = choice === currentVerb.type ? "✅ 正解！" : `ℹ️ 正解：${currentVerb.type}`;
-        feedback.style.color = choice === currentVerb.type ? "green" : "blue";
-      } else {
-        feedback.textContent = `❌ 不正解！正解：${currentVerb.type}`;
-        feedback.style.color = "red";
-        wrongAnswers.push(currentVerb);
-        updateWrongList();
-      }
-
-      if (currentVerb.pattern) {
-        patternBox.textContent = `🔍 パターン：${currentVerb.pattern}`;
-      }
-      document.getElementById("translation").textContent = "意味：" + currentVerb.translation;
-      document.getElementById("example").textContent = "例文：" + currentVerb.example;
-      showConjugation();
-    }
-
-    function showConjugation() {
-      const conj = conjugations[currentVerb.infinitive];
-      if (conj) {
-        const persons = ["yo", "tú", "él/ella/usted", "nosotros", "vosotros", "ellos/ellas/ustedes"];
-        const html = conj.map((c, i) => `<div><strong>${persons[i]}:</strong> ${c}</div>`).join("");
-        document.getElementById("conjugation").innerHTML = html;
-      }
-    }
-
-    function nextQuestion() {
-      displayVerb();
-    }
-
-    function updateWrongList() {
-      const container = document.getElementById("wrongWords");
-      container.innerHTML = "";
-      const unique = [...new Set(wrongAnswers.map(v => v.infinitive))];
-      unique.forEach(verb => {
-        const div = document.createElement("div");
-        div.className = "wrong-word";
-        div.textContent = verb;
-        container.appendChild(div);
-      });
-    }
-
-    displayVerb();
-  </script>
-</body>
-</html>
