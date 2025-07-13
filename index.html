@@ -2,19 +2,50 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>スペイン語動詞クイズ</title>
+  <title>スペイン語動詞クイズ＋活用表</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
-    h1 { text-align: center; }
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 20px;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+      box-sizing: border-box;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .container {
+      display: flex;
+      gap: 20px;
+    }
+    .left, .right {
+      box-sizing: border-box;
+    }
+    .left {
+      flex: 2;
+      min-width: 0;
+    }
+    .right {
+      flex: 1;
+      border-left: 2px solid #ccc;
+      padding-left: 20px;
+      min-width: 250px;
+    }
 
-    .question { font-size: 24px; margin: 20px 0; }
+    .question {
+      font-size: 24px;
+      margin-bottom: 15px;
+    }
 
     button {
-      padding: 15px 30px;
-      font-size: 20px;
-      border-radius: 8px;
+      padding: 12px 25px;
+      font-size: 18px;
+      border-radius: 6px;
       cursor: pointer;
-      margin: 15px 10px 0 0;
+      margin: 10px 10px 10px 0;
       transition: background-color 0.3s ease;
       box-sizing: border-box;
     }
@@ -22,49 +53,104 @@
       background-color: #eee;
     }
 
-    .options button {
-      margin: 10px;
+    .feedback {
+      font-size: 18px;
+      margin: 15px 0 10px 0;
+      min-height: 24px;
     }
 
-    .feedback { font-size: 18px; margin-top: 10px; }
-    .pattern, .translation, .example { margin-top: 5px; }
-    #wrong-list { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ccc; }
-    .wrong-word { margin: 5px 0; }
+    .pattern, .translation, .example {
+      margin-top: 8px;
+    }
 
-    @media screen and (max-width: 480px) {
+    #wrong-list {
+      margin-top: 30px;
+      padding-top: 15px;
+      border-top: 1px solid #ccc;
+    }
+    .wrong-word {
+      margin: 5px 0;
+    }
+
+    /* 活用表テーブル */
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #aaa;
+      padding: 6px 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+
+    /* スマホでは縦並びに */
+    @media screen and (max-width: 700px) {
+      .container {
+        flex-direction: column;
+      }
+      .right {
+        border-left: none;
+        border-top: 2px solid #ccc;
+        padding-left: 0;
+        padding-top: 15px;
+        min-width: auto;
+      }
       button {
         width: 100%;
-        padding: 20px 0;
-        font-size: 22px;
-        margin: 10px 0;
-      }
-      .options button {
-        margin: 10px 0;
+        margin: 8px 0;
       }
     }
   </style>
 </head>
 <body>
-  <h1>スペイン語動詞クイズ（規則／不規則）</h1>
-  <div class="question" id="verb">Loading...</div>
-  <div class="options">
-    <button onclick="checkAnswer('規則')">規則</button>
-    <button onclick="checkAnswer('不規則')">不規則</button>
-    <button onclick="giveUp()">分からない</button>
+  <h1>スペイン語動詞クイズ（規則／不規則）＋活用表</h1>
+  <div class="container">
+    <div class="left">
+      <div class="question" id="verb">Loading...</div>
+      <div class="options">
+        <button onclick="checkAnswer('規則')">規則</button>
+        <button onclick="checkAnswer('不規則')">不規則</button>
+        <button onclick="giveUp()">分からない</button>
+      </div>
+      <div class="feedback" id="feedback"></div>
+      <div class="pattern" id="pattern"></div>
+      <button onclick="showDetails()">意味・例文を見る</button>
+      <div class="translation" id="translation"></div>
+      <div class="example" id="example"></div>
+      <button onclick="nextQuestion()">次の問題へ ➤</button>
+      <div id="wrong-list">
+        <h3>❌ 間違えた動詞リスト</h3>
+        <div id="wrongWords"></div>
+      </div>
+    </div>
+
+    <div class="right">
+      <h2>活用表例：規則動詞 -ar 現在形</h2>
+      <table>
+        <thead>
+          <tr><th>人称</th><th>語尾</th><th>例: hablar</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>yo</td><td>-o</td><td>hablo</td></tr>
+          <tr><td>tú</td><td>-as</td><td>hablas</td></tr>
+          <tr><td>él/ella/Ud.</td><td>-a</td><td>habla</td></tr>
+          <tr><td>nosotros</td><td>-amos</td><td>hablamos</td></tr>
+          <tr><td>vosotros</td><td>-áis</td><td>habláis</td></tr>
+          <tr><td>ellos/ellas/Uds.</td><td>-an</td><td>hablan</td></tr>
+        </tbody>
+      </table>
+
+      <!-- 他の活用表や説明もここに追加可能 -->
+    </div>
   </div>
-  <div class="feedback" id="feedback"></div>
-  <div class="pattern" id="pattern"></div>
-  <button onclick="showDetails()">意味・例文を見る</button>
-  <div class="translation" id="translation"></div>
-  <div class="example" id="example"></div>
-  <button onclick="nextQuestion()">次の問題へ ➤</button>
-  <div id="wrong-list">
-    <h3>❌ 間違えた動詞リスト</h3>
-    <div id="wrongWords"></div>
-  </div>
+
   <script>
     const verbs = [
-      // 規則動詞（再帰もここにisReflexive:trueで含む）
       { infinitive: "cantar", type: "規則", isReflexive: false, translation: "歌う", example: "Yo canto una canción." },
       { infinitive: "cenar", type: "規則", isReflexive: false, translation: "夕食をとる", example: "Cenamos a las ocho." },
       { infinitive: "comprar", type: "規則", isReflexive: false, translation: "買う", example: "Compro pan en la tienda." },
@@ -83,11 +169,6 @@
       { infinitive: "subir", type: "規則", isReflexive: false, translation: "登る／上がる", example: "Subo las escaleras." },
       { infinitive: "vivir", type: "規則", isReflexive: false, translation: "住む", example: "Vivo en Tokio." },
 
-      // 再帰動詞（規則タイプのもの例）
-      { infinitive: "levantarse", type: "規則", isReflexive: true, translation: "起きる", example: "Me levanto a las siete." },
-      { infinitive: "bañarse", type: "規則", isReflexive: true, translation: "入浴する", example: "Me baño por la noche." },
-
-      // 不規則動詞
       { infinitive: "ser", type: "不規則", isReflexive: false, translation: "〜である", example: "Soy estudiante.", pattern: "完全不規則" },
       { infinitive: "estar", type: "不規則", isReflexive: false, translation: "いる、ある", example: "Estoy cansado.", pattern: "完全不規則" },
       { infinitive: "ir", type: "不規則", isReflexive: false, translation: "行く", example: "Voy a la escuela.", pattern: "完全不規則" },
@@ -171,7 +252,6 @@
         patternBox.innerHTML = "";
       }
 
-      // 分からなかったので間違えリストに入れる
       wrongAnswers.push(currentVerb);
       updateWrongList();
 
@@ -199,7 +279,7 @@
       });
     }
 
-    // 最初の問題表示
+    // 初期問題表示
     displayVerb();
   </script>
 </body>
