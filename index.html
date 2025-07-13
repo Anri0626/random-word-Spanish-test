@@ -9,7 +9,7 @@
     .question { font-size: 24px; margin: 20px 0; }
     .options button { margin: 5px; padding: 10px 20px; font-size: 18px; }
     .feedback { font-size: 18px; margin-top: 10px; }
-    .translation, .example { margin-top: 5px; color: #444; }
+    .pattern, .translation, .example { margin-top: 5px; color: #444; }
     #wrong-list { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ccc; }
     .wrong-word { margin: 5px 0; }
   </style>
@@ -23,6 +23,7 @@
     <button onclick="checkAnswer('再帰')">再帰</button>
   </div>
   <div class="feedback" id="feedback"></div>
+  <div class="pattern" id="pattern"></div>
   <button onclick="showDetails()">意味・例文を見る</button>
   <div class="translation" id="translation"></div>
   <div class="example" id="example"></div>
@@ -40,19 +41,21 @@
       { infinitive: "vivir", type: "規則", group: "-ir", translation: "住む", example: "Ella vive en Madrid." },
       { infinitive: "leer", type: "規則", group: "-er", translation: "読む", example: "Leo muchos libros." },
       { infinitive: "escribir", type: "規則", group: "-ir", translation: "書く", example: "Escribimos un correo." },
-      { infinitive: "ser", type: "不規則", group: "-", translation: "〜である", example: "Yo soy estudiante." },
-      { infinitive: "estar", type: "不規則", group: "-ar", translation: "いる、ある", example: "Estoy en casa." },
-      { infinitive: "ir", type: "不規則", group: "-", translation: "行く", example: "Vamos al cine." },
-      { infinitive: "tener", type: "不規則", group: "-er", translation: "持つ", example: "Tengo un libro." },
-      { infinitive: "decir", type: "不規則", group: "-ir", translation: "言う", example: "Digo la verdad." },
-      { infinitive: "jugar", type: "不規則", group: "-ar", translation: "遊ぶ／スポーツする", example: "Jugamos al fútbol." },
-      { infinitive: "cerrar", type: "不規則", group: "-ar", translation: "閉める", example: "Cierro la puerta." },
-      { infinitive: "salir", type: "不規則", group: "-ir", translation: "出る", example: "Salgo de casa a las 8." },
-      { infinitive: "poner", type: "不規則", group: "-er", translation: "置く", example: "Pongo la mesa." },
+
+      { infinitive: "ser", type: "不規則", group: "-", translation: "〜である", example: "Yo soy estudiante.", pattern: "完全不規則" },
+      { infinitive: "estar", type: "不規則", group: "-ar", translation: "いる、ある", example: "Estoy en casa.", pattern: "完全不規則" },
+      { infinitive: "ir", type: "不規則", group: "-", translation: "行く", example: "Vamos al cine.", pattern: "完全不規則" },
+      { infinitive: "tener", type: "不規則", group: "-er", translation: "持つ", example: "Tengo un libro.", pattern: "yo不規則（tengo）＋語幹変化 e→ie" },
+      { infinitive: "decir", type: "不規則", group: "-ir", translation: "言う", example: "Digo la verdad.", pattern: "yo不規則（digo）＋語幹変化 e→i" },
+      { infinitive: "jugar", type: "不規則", group: "-ar", translation: "遊ぶ", example: "Jugamos al fútbol.", pattern: "語幹変化 u→ue" },
+      { infinitive: "cerrar", type: "不規則", group: "-ar", translation: "閉める", example: "Cierro la puerta.", pattern: "語幹変化 e→ie" },
+      { infinitive: "salir", type: "不規則", group: "-ir", translation: "出る", example: "Salgo de casa a las 8.", pattern: "yo不規則（salgo）" },
+      { infinitive: "poner", type: "不規則", group: "-er", translation: "置く", example: "Pongo la mesa.", pattern: "yo不規則（pongo）" },
+
       { infinitive: "levantarse", type: "再帰", group: "-ar", translation: "起きる", example: "Me levanto a las 7." },
-      { infinitive: "acostarse", type: "再帰", group: "-ar", translation: "寝る", example: "Me acuesto tarde." },
+      { infinitive: "acostarse", type: "再帰", group: "-ar", translation: "寝る", example: "Me acuesto tarde.", pattern: "語幹変化 o→ue＋再帰" },
       { infinitive: "bañarse", type: "再帰", group: "-ar", translation: "入浴する", example: "Me baño por la noche." },
-      { infinitive: "vestirse", type: "再帰", group: "-ir", translation: "服を着る", example: "Me visto rápido." },
+      { infinitive: "vestirse", type: "再帰", group: "-ir", translation: "服を着る", example: "Me visto rápido.", pattern: "語幹変化 e→i＋再帰" },
       { infinitive: "llamarse", type: "再帰", group: "-ar", translation: "〜という名前である", example: "Me llamo Ana." }
     ];
 
@@ -67,12 +70,15 @@
       currentVerb = getRandomVerb();
       document.getElementById("verb").textContent = `次の動詞は何の種類？： ${currentVerb.infinitive}`;
       document.getElementById("feedback").textContent = "";
+      document.getElementById("pattern").textContent = "";
       document.getElementById("translation").textContent = "";
       document.getElementById("example").textContent = "";
     }
 
     function checkAnswer(choice) {
       const feedback = document.getElementById("feedback");
+      const patternBox = document.getElementById("pattern");
+
       if (choice === currentVerb.type) {
         feedback.textContent = "✅ 正解！";
         feedback.style.color = "green";
@@ -81,6 +87,15 @@
         feedback.style.color = "red";
         wrongAnswers.push(currentVerb);
         updateWrongList();
+      }
+
+      // 👇 不規則動詞やパターンがある場合だけ表示！
+      if (currentVerb.type === "不規則" && currentVerb.pattern) {
+        patternBox.textContent = `🔍 不規則の種類：${currentVerb.pattern}`;
+      } else if (currentVerb.type === "再帰" && currentVerb.pattern) {
+        patternBox.textContent = `🔍 特徴：${currentVerb.pattern}`;
+      } else {
+        patternBox.textContent = "";
       }
     }
 
@@ -105,7 +120,6 @@
       });
     }
 
-    // 初回読み込み
     displayVerb();
   </script>
 </body>
