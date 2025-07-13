@@ -50,6 +50,7 @@
   <div class="options">
     <button onclick="checkAnswer('規則')">規則</button>
     <button onclick="checkAnswer('不規則')">不規則</button>
+    <button onclick="giveUp()">分からない</button>
   </div>
   <div class="feedback" id="feedback"></div>
   <div class="pattern" id="pattern"></div>
@@ -153,6 +154,26 @@
       } else {
         patternBox.innerHTML = "";
       }
+
+      showDetails();
+    }
+
+    function giveUp() {
+      const feedback = document.getElementById("feedback");
+      const patternBox = document.getElementById("pattern");
+
+      feedback.textContent = `👉 正解は「${currentVerb.type}」です。`;
+      feedback.style.color = "blue";
+
+      if (currentVerb.pattern) {
+        patternBox.innerHTML = `<span style="color: blue; font-size: 18px;">🔍 不規則の種類：${currentVerb.pattern}</span>`;
+      } else {
+        patternBox.innerHTML = "";
+      }
+
+      // 分からなかったので間違えリストに入れる
+      wrongAnswers.push(currentVerb);
+      updateWrongList();
 
       showDetails();
     }
