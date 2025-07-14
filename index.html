@@ -177,9 +177,9 @@ function displayVerb() {
   currentVerb = getRandomVerb();
   document.getElementById("verb").textContent = `次の動詞の種類は？： ${currentVerb.infinitive}`;
   document.getElementById("feedback").textContent = "";
-  document.getElementById("pattern").innerHTML = currentVerb.pattern ? `🔍 特徴・パターン：<span style="color:red;">${currentVerb.pattern}</span>` : "";
-  document.getElementById("translation").textContent = "意味：" + currentVerb.translation;
-  document.getElementById("example").textContent = "例文：" + currentVerb.example;
+  document.getElementById("pattern").innerHTML = "";
+  document.getElementById("translation").textContent = "";
+  document.getElementById("example").textContent =　"";
   document.getElementById("conjugation-table").innerHTML = "選択後に表示されます";
 }
 
@@ -203,6 +203,11 @@ function checkAnswer(choice) {
     wrongAnswers.push(currentVerb);
     updateWrongList();
   }
+  if (currentVerb.pattern) {
+  document.getElementById("pattern").innerHTML = `🔍 特徴・パターン：<span style="color:red;">${currentVerb.pattern}</span>`;
+}
+document.getElementById("translation").textContent = "意味：" + currentVerb.translation;
+document.getElementById("example").textContent = "例文：" + currentVerb.example;
   showConjugation(currentVerb.infinitive);
 }
 
