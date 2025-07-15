@@ -1,297 +1,126 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>スペイン語動詞クイズ完全版</title>
+  <title>スペイン語質問練習</title>
   <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-      margin: 0 auto;
-      max-width: 1200px;
-      display: flex;
-      flex-direction: row;
-      gap: 40px;
-    }
-    .quiz-container { flex: 1; }
-    h1 { text-align: center; }
-    .question { font-size: 24px; margin: 20px 0; }
-    button {
-      padding: 15px 30px;
-      font-size: 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      margin: 15px 10px 0 0;
-      transition: background-color 0.3s ease;
-      box-sizing: border-box;
-    }
-    button:hover { background-color: #eee; }
-    .feedback, .pattern, .translation, .example {
-      font-size: 18px;
-      margin-top: 10px;
-    }
-    .options button { margin: 10px 10px 0 0; }
-    #wrong-list {
-      margin-top: 30px;
-      padding-top: 20px;
-      border-top: 1px solid #ccc;
-    }
-    .wrong-word { margin: 5px 0; }
-    .table-container {
-      flex: 0.8;
-      min-width: 300px;
-      font-size: 18px;
-    }
-    #notice {
-      margin-top: 20px;
-      font-weight: bold;
-      color: blue;
-      min-height: 24px;
-    }
-    #cycle-message {
-      margin-top: 20px;
-      font-size: 20px;
-      color: darkred;
-      font-weight: bold;
-    }
-    @media screen and (max-width: 768px) {
-      body { flex-direction: column; }
-      button {
-        width: 100%;
-        font-size: 22px;
-        padding: 20px;
-        margin: 10px 0;
-      }
-    }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-    }
-    table td, table th {
-      border: 1px solid #ccc;
-      padding: 6px;
-    }
-    table th { background-color: #f0f0f0; }
-    #conjugation-table { margin-top: 20px; }
+    body { font-family: sans-serif; text-align: center; padding: 30px; }
+    button { padding: 10px 20px; font-size: 16px; margin: 5px; }
+    #question { font-size: 24px; margin: 20px; color: #333; }
+    #translation, #answer { font-size: 18px; color: #666; display: none; margin-top: 10px; }
   </style>
 </head>
 <body>
-  <div class="quiz-container">
-    <h1>スペイン語動詞クイズ（規則／不規則）</h1>
-    <div class="question" id="verb">Loading...</div>
-    <div class="options">
-      <button onclick="checkAnswer('規則')">規則</button>
-      <button onclick="checkAnswer('不規則')">不規則</button>
-      <button onclick="checkAnswer('分からない')">分からない</button>
-    </div>
-    <div class="feedback" id="feedback"></div>
-    <div class="pattern" id="pattern"></div>
-    <div class="translation" id="translation"></div>
-    <div class="example" id="example"></div>
-    <button onclick="nextQuestion()">次の問題へ ➤</button>
-    <div id="wrong-list">
-      <h3>❌ 間違えた動詞リスト</h3>
-      <div id="wrongWords"></div>
-    </div>
-    <div id="notice"></div>
-    <div id="cycle-message"></div>
-  </div>
+  <h1>ランダム会話練習（スペイン語＆日本語訳付き）</h1>
+  <div id="question">🎲 ボタンを押して質問を表示！</div>
+  <div id="translation"></div>
+  <div id="answer"></div>
+  <button onclick="generateQuestion()">質問を表示＆音声再生</button>
+  <button id="toggle-translation" onclick="toggleTranslation()">日本語訳を表示</button>
+  <button id="toggle-answer" onclick="toggleAnswer()" disabled>答えを表示</button>
 
-  <div class="table-container">
-    <h2>📘 活用表</h2>
-    <div id="conjugation-table">選択後に表示されます</div>
-  </div>
+  <script>
+    const questions = [
+      { es: "¿Cómo se llama tu profesor/a de español?", ja: "あなたのスペイン語の先生の名前は何ですか？", answer: "Mi profesora se llama Saitou." },
+      { es: "¿Cuántos años tienes?", ja: "あなたは何歳ですか？", answer: "Tengo dieciocho años." },
+      { es: "¿Cuántos años tiene tu hermano?", ja: "あなたの兄弟は何歳ですか？", answer: "Mi hermano tiene veinte años." },
+      { es: "¿Cuántos años tiene tu padre?", ja: "あなたのお父さんは何歳ですか？", answer: "Mi padre tiene cincuenta años." },
+      { es: "¿Cuántos años tiene tu madre?", ja: "あなたのお母さんは何歳ですか？", answer: "Mi madre tiene cincuenta años." },
+      { es: "¿Dónde vives?", ja: "あなたはどこに住んでいますか？", answer: "Vivo en Siinamati, Tokyo." },
+      { es: "¿Dónde viven tus primos?", ja: "あなたのいとこはどこに住んでいますか？", answer: "Mis primos viven en Chiba." },
+      { es: "¿Qué haces los viernes?", ja: "金曜日には何をしますか？", answer: "Los viernes voy a clase y al gimnasio." },
+      { es: "¿Qué haces los sábados?", ja: "土曜日には何をしますか？", answer: "Los sábados voy a clase y al gimnasio." },
+      { es: "¿Qué haces los domingos?", ja: "日曜日には何をしますか？", answer: "Los domingos voy a clase y al gimnasio." },
+      { es: "¿Qué haces en otros días?", ja: "他の日には何をしますか？", answer: "En otros días voy a clase y al gimnasio." },
+      { es: "¿Qué te gusta hacer los fines de semana?", ja: "週末に何をするのが好きですか？", answer: "Me gusta jugar al futbol con mis amigos." },
+      { es: "¿Qué lenguas hablas?", ja: "どんな言語を話しますか？", answer: "Hablo japonés y inglés." },
+      { es: "¿Qué hora es?", ja: "今何時ですか？", answer: "Son las tres de la tarde." },
+      { es: "¿A qué hora te levantas normalmente?", ja: "普段何時に起きますか？", answer: "Normalmente me levanto a las siete." },
+      { es: "¿A qué hora te acuestas normalmente?", ja: "普段何時に寝ますか？", answer: "Normalmente me acuesto a las once." },
+      { es: "¿A qué hora te duchas normalmente?", ja: "普段何時にシャワーを浴びますか？", answer: "Me ducho a las ocho de la tarde." },
+      { es: "¿Dónde está tu universidad?", ja: "あなたの大学はどこにありますか？", answer: "Mi universidad está en Ikebukuro." },
+      { es: "¿Dónde comes normalmente y con quién?", ja: "普段どこで、誰と食事をしますか？", answer: "Normalmente como en la cafetería con mis amigos." },
+      { es: "¿Qué sabes hacer?", ja: "あなたは何ができますか？（何が得意ですか？）", answer: "Sé hacer natación." },
+      { es: "¿Cuándo es tu cumpleaños?", ja: "あなたの誕生日はいつですか？", answer: "Mi cumpleaños es el veintiséis de junio." },
+      { es: "¿Cómo eres tú?", ja: "あなたはどんな人ですか？", answer: "Soy simpático e inteligente." },
+      { es: "¿Cómo es tu amigo?", ja: "あなたの友達はどんな人ですか？", answer: "Mi amigo es simpático e inteligente." },
+      { es: "¿Cómo es tu madre?", ja: "あなたのお母さんはどんな人ですか？", answer: "Mi madre es simpática e inteligente." },
+      { es: "¿Qué hay en tu casa?", ja: "あなたの家には何がありますか？", answer: "En mi casa hay una cama, una mesa y una silla." },
+      { es: "¿Qué hay en tu dormitorio?", ja: "あなたの部屋には何がありますか？", answer: "En mi dormitorio hay una cama, una mesa y una silla." },
+      { es: "¿Qué hay en tu salón?", ja: "あなたのリビングには何がありますか？", answer: "En mi salón hay una televisión y un sofá." },
+      { es: "¿Cómo se dice ______ en español?", ja: "_______はスペイン語で何と言いますか？", answer: "Por ejemplo, 'manzana' se dice 'manzana'." },
+      { es: "¿Cómo se escribe tu nombre/ apellido?", ja: "あなたの名前／名字はどう書きますか？", answer: "Mi nombre se escribe A-N-R-I." },
+      { es: "¿Dónde tomas café?", ja: "どこでコーヒーを飲みますか？", answer: "Tomo café en la cafetería cerca de mi casa." },
+      { es: "¿Dónde te lavas los dientes?", ja: "どこで歯を磨きますか？", answer: "Me lavo los dientes en el baño." },
+      { es: "¿Dónde escuchas música?", ja: "どこで音楽を聴きますか？", answer: "Escucho música en mi habitación y en el autobús." },
+      { es: "¿Cuándo vienes a la universidad?", ja: "いつ大学に来ますか？", answer: "Vengo a la universidad por la mañana." },
+      { es: "¿Cómo vuelves a casa?", ja: "どうやって家に帰りますか？", answer: "Vuelvo a casa en bicicleta." },
+      { es: "¿De dónde es Pablo Picasso?", ja: "パブロ・ピカソはどこの出身ですか？", answer: "Pablo Picasso es de España." },
+      { es: "¿De dónde es William Shakespeare?", ja: "ウィリアム・シェイクスピアはどこの出身ですか？", answer: "William Shakespeare es de Inglaterra." },
+      { es: "¿De dónde es Umeko Tsuda?", ja: "津田梅子はどこの出身ですか？", answer: "Umeko Tsuda es de Japón." }
+    ];
 
-<script>
-const verbs = [
-  { infinitive: "cantar", type: "規則", group: "-ar", translation: "歌う", example: "Yo canto una canción." },
-  { infinitive: "trabajar", type: "規則", group: "-ar", translation: "働く", example: "Trabajo en una oficina." },
-  { infinitive: "cenar", type: "規則", group: "-ar", translation: "夕食をとる", example: "Cenamos a las ocho." },
-  { infinitive: "comprar", type: "規則", group: "-ar", translation: "買う", example: "Compro pan en la tienda." },
-  { infinitive: "estudiar", type: "規則", group: "-ar", translation: "勉強する", example: "Estudian español." },
-  { infinitive: "tomar", type: "規則", group: "-ar", translation: "飲む／取る", example: "Tomamos café." },
-  { infinitive: "aprender", type: "規則", group: "-er", translation: "学ぶ", example: "Aprendemos japonés." },
-  { infinitive: "beber", type: "規則", group: "-er", translation: "飲む", example: "Bebo agua." },
-  { infinitive: "comprender", type: "規則", group: "-er", translation: "理解する", example: "¿Comprendes?" },
-  { infinitive: "leer", type: "規則", group: "-er", translation: "読む", example: "Leo muchos libros." },
-  { infinitive: "abrir", type: "規則", group: "-ir", translation: "開ける", example: "Abro la puerta." },
-  { infinitive: "escribir", type: "規則", group: "-ir", translation: "書く", example: "Escribimos un correo." },
-  { infinitive: "vivir", type: "規則", group: "-ir", translation: "住む", example: "Vivo en Tokio." },
-  { infinitive: "asistir", type: "規則", group: "-ir", translation: "出席する", example: "Asisto a clase." },
-  { infinitive: "partir", type: "規則", group: "-ir", translation: "分ける／出発する", example: "Partimos la tarta." },
-  { infinitive: "recibir", type: "規則", group: "-ir", translation: "受け取る", example: "Recibo una carta." },
-  { infinitive: "subir", type: "規則", group: "-ir", translation: "登る", example: "Subimos la montaña." },
-  { infinitive: "llamarse", type: "規則", group: "-ar", translation: "〜という名前である", example: "Me llamo Ana." },
-  { infinitive: "lavarse", type: "規則", group: "-ar", translation: "洗う（再帰）", example: "Me lavo las manos." },
-  { infinitive: "levantarse", type: "規則", group: "-ar", translation: "起きる（再帰）", example: "Me levanto a las siete." },
-  { infinitive: "peinarse", type: "規則", group: "-ar", translation: "髪をとかす（再帰）", example: "Me peino antes de salir." },
-  { infinitive: "quitarse", type: "規則", group: "-ar", translation: "脱ぐ／取り除く（再帰）", example: "Me quito el abrigo." },
-  { infinitive: "ducharse", type: "規則", group: "-ar", translation: "シャワーを浴びる（再帰）", example: "Me ducho rápido." },
-  { infinitive: "bañarse", type: "規則", group: "-ar", translation: "入浴する（再帰）", example: "Me baño por la noche." },
-  { infinitive: "ser", type: "不規則", translation: "〜である", example: "Soy estudiante.", pattern: "完全不規則" },
-  { infinitive: "ir", type: "不規則", translation: "行く", example: "Voy a la escuela.", pattern: "完全不規則" },
-  { infinitive: "tener", type: "不規則", translation: "持つ", example: "Tengo un libro.", pattern: "yo不規則＋語幹変化 e→ie" },
-  { infinitive: "hacer", type: "不規則", translation: "する", example: "Hago la tarea.", pattern: "yo不規則（hago）" },
-  { infinitive: "estar", type: "不規則", translation: "いる、ある", example: "Estoy cansado.", pattern: "完全不規則" },
-  { infinitive: "venir", type: "不規則", translation: "来る", example: "Vengo pronto.", pattern: "yo不規則＋語幹変化 e→ie" },
-  { infinitive: "decir", type: "不規則", translation: "言う", example: "Digo la verdad.", pattern: "yo不規則＋語幹変化 e→i" },
-  { infinitive: "dormir", type: "不規則", translation: "眠る", example: "Duermo ocho horas.", pattern: "語幹変化 o→ue" },
-  { infinitive: "preferir", type: "不規則", translation: "好む", example: "Prefiero té.", pattern: "語幹変化 e→ie" },
-  { infinitive: "sentarse", type: "不規則", translation: "座る（再帰）", example: "Me siento aquí.", pattern: "語幹変化 e→ie＋再帰" },
-  { infinitive: "acostarse", type: "不規則", translation: "寝る（再帰）", example: "Me acuesto tarde.", pattern: "語幹変化 o→ue＋再帰" },
-  { infinitive: "vestirse", type: "不規則", translation: "服を着る（再帰）", example: "Me visto rápido.", pattern: "語幹変化 e→i＋再帰" },
-  { infinitive: "sentirse", type: "不規則", translation: "感じる（再帰）", example: "Me siento bien.", pattern: "語幹変化 e→ie＋再帰" },
-  { infinitive: "despertarse", type: "不規則", translation: "目覚める（再帰）", example: "Me despierto temprano.", pattern: "語幹変化 e→ie＋再帰" },
-  { infinitive: "divertirse", type: "不規則", translation: "楽しむ（再帰）", example: "Me divierto mucho.", pattern: "語幹変化 e→ie＋再帰" },
-  { infinitive: "salir", type: "不規則", translation: "出る", example: "Salgo de casa.", pattern: "yo不規則（salgo）" },
-  { infinitive: "poner", type: "不規則", translation: "置く", example: "Pongo el libro en la mesa.", pattern: "yo不規則（pongo）" },
-  { infinitive: "conocer", type: "不規則", translation: "知っている", example: "Conozco a Juan.", pattern: "yo不規則（conozco）" },
-  { infinitive: "conducir", type: "不規則", translation: "運転する", example: "Conduzco mi coche.", pattern: "yo不規則（conduzco）" },
-  { infinitive: "dar", type: "不規則", translation: "与える", example: "Doy un regalo.", pattern: "yo不規則（doy）" },
-  { infinitive: "traer", type: "不規則", translation: "持ってくる", example: "Traigo mi cuaderno.", pattern: "yo不規則（traigo）" },
-  { infinitive: "cerrar", type: "不規則", pattern: "語幹変化 e→ie", translation: "閉める", example: "Cierro la ventana." }, 
-  { infinitive: "comenzar", type: "不規則", pattern: "語幹変化 e→ie", translation: "始める", example: "Comenzamos la clase." },
-　{ infinitive: "empezar", type: "不規則", pattern: "語幹変化 e→ie", translation: "始める", example: "Empiezo a estudiar." },
-　{ infinitive: "entender", type: "不規則", pattern: "語幹変化 e→ie", translation: "理解する", example: "¿Entiendes la pregunta?" },
-　{ infinitive: "pensar", type: "不規則", pattern: "語幹変化 e→ie", translation: "考える", example: "Pienso en ti." },
-　{ infinitive: "sentir", type: "不規則", pattern: "語幹変化 e→ie", translation: "感じる", example: "Siento frío." },
-　{ infinitive: "mentir", type: "不規則", pattern: "語幹変化 e→ie", translation: "うそをつく", example: "Mientes mucho." },
-  { infinitive: "contar", type: "不規則", pattern: "語幹変化 o→ue", translation: "数える／語る", example: "Cuento hasta diez." },
-  { infinitive: "encontrar", type: "不規則", pattern: "語幹変化 o→ue", translation: "見つける", example: "Encuentro mis llaves." },
-  { infinitive: "morir", type: "不規則", pattern: "語幹変化 o→ue", translation: "死ぬ", example: "El pez muere sin agua." },
-  { infinitive: "poder", type: "不規則", pattern: "語幹変化 o→ue", translation: "〜できる", example: "Puedo hablar español." },
-  { infinitive: "volver", type: "不規則", pattern: "語幹変化 o→ue", translation: "戻る", example: "Vuelvo a casa." },
-  { infinitive: "costar", type: "不規則", pattern: "語幹変化 o→ue", translation: "費用がかかる", example: "Cuesta mucho dinero." },
-  { infinitive: "llover", type: "不規則", pattern: "語幹変化 o→ue", translation: "雨が降る", example: "Llueve mucho hoy." },
-  { infinitive: "volar", type: "不規則", pattern: "語幹変化 o→ue", translation: "飛ぶ", example: "El pájaro vuela alto." },
-  { infinitive: "pedir", type: "不規則", pattern: "語幹変化 e→i", translation: "頼む", example: "Pido ayuda." },
-  { infinitive: "servir", type: "不規則", pattern: "語幹変化 e→i", translation: "提供する／役立つ", example: "Sirvo la comida." },
-  { infinitive: "repetir", type: "不規則", pattern: "語幹変化 e→i", translation: "繰り返す", example: "Repito la frase." },
-  { infinitive: "medir", type: "不規則", pattern: "語幹変化 e→i", translation: "測る", example: "Mido la mesa." },
-  { infinitive: "corregir", type: "不規則", pattern: "語幹変化 e→i", translation: "訂正する", example: "Corrijo los errores." },
-  { infinitive: "elegir", type: "不規則", pattern: "語幹変化 e→i", translation: "選ぶ", example: "Elijo este libro." },
-  { infinitive: "seguir", type: "不規則", pattern: "語幹変化 e→i", translation: "ついて行く", example: "Sigo a mi profesor." }
-];
+    let showTranslation = false;
+    let showAnswer = false;
+    let currentQuestion = null;
+    let remainingQuestions = [...questions];
+    let lastQuestion = null;
 
-let currentVerb;
-let wrongAnswers = [];
-let remainingVerbs = [];
+    function generateQuestion() {
+      if (remainingQuestions.length === 0) {
+        alert('全部の質問を一巡しました！リセットします。');
+        remainingQuestions = [...questions];
+      }
 
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-}
+      let randomIndex;
+      let nextQuestion;
 
-function getRandomVerb() {
-  if (remainingVerbs.length === 0) {
-    document.getElementById("cycle-message").textContent = "🎉 全49語を一巡しました！再挑戦スタート！";
-    remainingVerbs = shuffle([...verbs]);
-  } else {
-    document.getElementById("cycle-message").textContent = "";
-  }
-  return remainingVerbs.pop();
-}
+      do {
+        randomIndex = Math.floor(Math.random() * remainingQuestions.length);
+        nextQuestion = remainingQuestions[randomIndex];
+      } while (nextQuestion === lastQuestion && remainingQuestions.length > 1);
 
-function displayVerb() {
-  currentVerb = getRandomVerb();
-  document.getElementById("verb").textContent = `次の動詞の種類は？： ${currentVerb.infinitive}`;
-  document.getElementById("feedback").textContent = "";
-  document.getElementById("pattern").innerHTML = "";
-  document.getElementById("translation").textContent = "";
-  document.getElementById("example").textContent = "";
-  document.getElementById("conjugation-table").innerHTML = "選択後に表示されます";
-}
+      currentQuestion = remainingQuestions.splice(randomIndex, 1)[0];
+      lastQuestion = currentQuestion;
 
-function nextQuestion() {
-  displayVerb();
-}
+      document.getElementById("question").textContent = "📘 " + currentQuestion.es;
 
-function checkAnswer(choice) {
-  const feedback = document.getElementById("feedback");
-  if (choice === currentVerb.type) {
-    feedback.textContent = "✅ 正解！";
-    feedback.style.color = "green";
-  } else if (choice === "分からない") {
-    feedback.textContent = `❓ 分からなかったね。正解：${currentVerb.type}`;
-    feedback.style.color = "gray";
-    wrongAnswers.push(currentVerb);
-    updateWrongList();
-  } else {
-    feedback.textContent = `❌ 不正解！正解：${currentVerb.type}`;
-    feedback.style.color = "red";
-    wrongAnswers.push(currentVerb);
-    updateWrongList();
-  }
-  if (currentVerb.pattern) {
-  document.getElementById("pattern").innerHTML = `🔍 特徴・パターン：<span style="color:red;">${currentVerb.pattern}</span>`;
-}
-document.getElementById("translation").textContent = "意味：" + currentVerb.translation;
-document.getElementById("example").textContent = "例文：" + currentVerb.example;
-  showConjugation(currentVerb.infinitive);
-}
+      showTranslation = false;
+      const translationDiv = document.getElementById("translation");
+      translationDiv.textContent = "🇯🇵 " + currentQuestion.ja;
+      translationDiv.style.display = "none";
+      document.getElementById("toggle-translation").textContent = "日本語訳を表示";
 
-function updateWrongList() {
-  const container = document.getElementById("wrongWords");
-  container.innerHTML = "";
-  const unique = [...new Set(wrongAnswers.map(v => v.infinitive))];
-  unique.forEach(verb => {
-    const div = document.createElement("div");
-    div.className = "wrong-word";
-    div.textContent = verb;
-    container.appendChild(div);
-  });
-}
+      showAnswer = false;
+      const answerDiv = document.getElementById("answer");
+      if (currentQuestion.answer) {
+        answerDiv.textContent = "例： " + currentQuestion.answer;
+      } else {
+        answerDiv.textContent = "";
+      }
+      answerDiv.style.display = "none";
+      const answerBtn = document.getElementById("toggle-answer");
+      answerBtn.disabled = !currentQuestion.answer;
+      answerBtn.textContent = "答えを表示";
 
-function showConjugation(inf) {
-  const table = document.getElementById("conjugation-table");
-  const pronouns = ["yo", "tú", "él/ella", "nosotros", "vosotros", "ellos/ellas"];
-  const irregular = {
-    "ser": ["soy", "eres", "es", "somos", "sois", "son"],
-    "ir": ["voy", "vas", "va", "vamos", "vais", "van"],
-    "tener": ["tengo", "tienes", "tiene", "tenemos", "tenéis", "tienen"],
-    "estar": ["estoy", "estás", "está", "estamos", "estáis", "están"],
-    "hacer": ["hago", "haces", "hace", "hacemos", "hacéis", "hacen"],
-    "decir": ["digo", "dices", "dice", "decimos", "decís", "dicen"],
-    "venir": ["vengo", "vienes", "viene", "venimos", "venís", "vienen"],
-    "dormir": ["duermo", "duermes", "duerme", "dormimos", "dormís", "duermen"],
-    "preferir": ["prefiero", "prefieres", "prefiere", "preferimos", "preferís", "prefieren"],
-    "sentarse": ["me siento", "te sientas", "se sienta", "nos sentamos", "os sentáis", "se sientan"],
-    "acostarse": ["me acuesto", "te acuestas", "se acuesta", "nos acostamos", "os acostáis", "se acuestan"],
-    "vestirse": ["me visto", "te vistes", "se viste", "nos vestimos", "os vestís", "se visten"],
-    "sentirse": ["me siento", "te sientes", "se siente", "nos sentimos", "os sentís", "se sienten"],
-    "despertarse": ["me despierto", "te despiertas", "se despierta", "nos despertamos", "os despertáis", "se despiertan"],
-    "divertirse": ["me divierto", "te diviertes", "se divierte", "nos divertimos", "os divertís", "se divierten"]
-  };
-
-  if (irregular[inf]) {
-    const rows = irregular[inf].map((v, i) => `<tr><td>${pronouns[i]}</td><td>${v}</td></tr>`).join("");
-    table.innerHTML = `<table><tr><th>主語</th><th>現在形</th></tr>${rows}</table>`;
-  } else {
-    const stem = inf.replace(/(se)?$/, "").replace(/arse|erse|irse/, "").replace(/r$/, "");
-    let ending;
-    if (inf.endsWith("ar")) {
-      ending = ["o", "as", "a", "amos", "áis", "an"];
-    } else if (inf.endsWith("er")) {
-      ending = ["o", "es", "e", "emos", "éis", "en"];
-    } else if (inf.endsWith("ir")) {
-      ending = ["o", "es", "e", "imos", "ís", "en"];
-    } else {
-      table.innerHTML = "（活用未対応）";
-      return;
+      const utterance = new SpeechSynthesisUtterance(currentQuestion.es);
+      utterance.lang = 'es-ES';
+      speechSynthesis.speak(utterance);
     }
-    const rows = pronouns.map((p, i) => `<tr><td>${p}</td><td>${stem + ending[i]}</td></tr>`).join("");
-    table.innerHTML = `<table><tr><th>主語</th><th>現在形</th></tr>${rows}</table>`;
-  }
-}
 
-window.onload = function () {
-  remainingVerbs = shuffle([...verbs]);
-  nextQuestion();
-};
+    function toggleTranslation() {
+      showTranslation = !showTranslation;
+      const translationDiv = document.getElementById("translation");
+      translationDiv.style.display = showTranslation ? "block" : "none";
+      document.getElementById("toggle-translation").textContent = showTranslation ? "日本語訳を隠す" : "日本語訳を表示";
+    }
 
-</script>
+    function toggleAnswer() {
+      showAnswer = !showAnswer;
+      const answerDiv = document.getElementById("answer");
+      answerDiv.style.display = showAnswer ? "block" : "none";
+      document.getElementById("toggle-answer").textContent = showAnswer ? "答えを隠す" : "答えを表示";
+    }
+  </script>
 </body>
 </html>
